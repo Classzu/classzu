@@ -42,7 +42,6 @@ module.exports = {
                         loader: 'babel-loader',
                         options: {
                             presets: ['@babel/preset-env'],
-                            plugins: ['@babel/plugin-transform-runtime'],
                         }
                     }
                 ],
@@ -50,15 +49,13 @@ module.exports = {
                     fullySpecified: false
                 }
             },
-            // {
-            //     test: /\.scss$/,
-            //     use: [
-            //         'style-loader', 
-            //         'css-loader',
-            //         'sass-loader'
-            //     ],
-            //     include: path.resolve(__dirname, 'src/css'),
-            // },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader', 
+                    'css-loader',
+                ],
+            },
             // {
             //     test:/\.html$/,
             //     use: ["html-loader"]

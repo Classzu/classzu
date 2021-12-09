@@ -1,5 +1,5 @@
 import Classzu from '../src/index'
-
+import '../src/css/style.css'
 
 const classzu = new Classzu()
-classzu.setup('myDiv')
+classzu.setup('myDiv').useGUI()

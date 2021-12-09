@@ -3,8 +3,15 @@
   "version": "0.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "style": "dist/style.min.css",
   "devDependencies": {
+    "@babel/preset-env": "^7.16.4",
+    "babel-loader": "^8.2.3",
+    "clean-css": "^5.2.2",
+    "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
+    "sass-loader": "^12.4.0",
+    "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2",
     "webpack": "^5.65.0",
@@ -12,8 +19,8 @@
     "webpack-dev-server": "^4.6.0"
   },
   "scripts": {
-    "test": "webpack serve --config build/webpack.dev.js --open",
-    "build": "tsc",
+    "test": "npm run build & webpack serve --config build/webpack.dev.js",
+    "build": "tsc & cleancss -o dist/style.min.css src/css/style.css",
     "prepublishOnly": "npm run build"
   },
   "author": "mcnleandro",
