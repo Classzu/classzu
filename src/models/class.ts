@@ -6,13 +6,15 @@ class Class extends Konva.Group {
     public constructor() {
         super()
 
+        const { position, size, color, fillColor} = Config.Class
+
         this.rect = new Konva.Rect({
-            x: 20,
-            y: 20,
-            width: 100,
-            height: 50,
-            fill: Config.Class.colors.white,
-            stroke: Config.Class.fillColors.gray,
+            x: position.x,
+            y: position.y,
+            width: size.width,
+            height: size.height,
+            fill: color.white,
+            stroke: fillColor.gray,
             strokeWidth: 4,
             draggable: true,
         })

@@ -1,7 +1,11 @@
 import Class from './class'
+import GUI from './gui'
+import Storage from './storage'
 
 const Config = {
-    Class: Class,
+    Class,
+    GUI,
+    Storage,
 }
 
 export default Config

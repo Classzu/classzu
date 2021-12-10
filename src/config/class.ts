@@ -1,9 +1,13 @@
 type ClassConfig = {
-    colors: {
+    color: {
         [key:string]: string
     },
-    fillColors: {
+    fillColor: {
         [key:string]: string
+    },
+    position: {
+        x: number,
+        y: number,
     },
     size: {
         width: number,
@@ -12,13 +16,17 @@ type ClassConfig = {
 }
 
 const Class: ClassConfig = {
-    colors: {
+    color: {
         black: "#000000",
         red: "#ff0000",
     },
-    fillColors: {
+    fillColor: {
         gray: "#bbc8d3",
         red: "#ff0000"
+    },
+    position: {
+        x: 200,
+        y: 200,
     },
     size: {
         width: 100, 
