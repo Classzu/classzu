@@ -23,7 +23,7 @@ class Class extends Konva.Group {
 
         let obj = {}
         
-        if (data === undefined) {
+        if (data === undefined || data === null) {
             
             const { position, size, color, fillColor} = Config.Class
             obj = {
@@ -64,8 +64,8 @@ class Class extends Konva.Group {
         return this;
     }
 
-    static generate() {
-        return new Class().group().listen()
+    static generate(data?: KonvaJsonData[]) {
+        return new Class(data).group().listen()
     }
 
 }

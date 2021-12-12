@@ -50,9 +50,7 @@ class Node {
             }
         }
         const ClasszuLoadation = (NodeClass: any) => {
-            no = new NodeClass(obj.children);
-            no.group()
-            no.listen()
+            no = NodeClass.generate(obj.children);
             return no;
         }
         const KonvaLoadation = (NodeClass: any) => {
