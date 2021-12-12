@@ -1,6 +1,87 @@
 import Konva from 'konva';
-import Class from './models/class';
+import { Util } from 'konva/lib/Util';
+import { Konva as KonvaGlobal } from 'konva/lib/Global'
+import Class from './class/class';
 import Config from './config/index'
+
+
+type ClasszuNodeType = {
+    Class: any
+}
+
+const ClasszuNode: ClasszuNodeType = {
+    "Class": Class
+}
+
+/**
+ * Quote
+ * https://github.com/konvajs/konva/blob/80802f59f1001caa25aea9d702a735f24a631449/src/Node.ts#L2562-L2616
+ * need to refactor type
+ */
+class Node {
+
+
+    static create(data: string, container?: string) {
+        if (Util._isString(data)) {
+            data = JSON.parse(data);
+        }
+        return this._createNode(data, container);
+    }
+
+    static _createNode(obj: any, container?: string) {
+
+        var className: string = obj.className ,
+        children = obj.children,
+        no,
+        len,
+        n;
+
+        // if container was passed in, add it to attrs
+        if (container) {
+            obj.attrs.container = container;
+        }
+
+        const createChildren = (parent: any) => {
+            if (children) {
+                len = children.length;
+                for (n = 0; n < len; n++) {
+                    parent.add(Node._createNode(children[n]));
+                }
+            }
+        }
+        const ClasszuLoadation = (NodeClass: any) => {
+            no = new NodeClass(obj.children);
+            no.group()
+            no.listen()
+            return no;
+        }
+        const KonvaLoadation = (NodeClass: any) => {
+            no = new NodeClass(obj.attrs);
+            createChildren(no)
+            return no
+        }
+
+
+        if (ClasszuNode[className as keyof ClasszuNodeType]) {
+            const NodeClass = ClasszuNode[className as keyof ClasszuNodeType];
+            return ClasszuLoadation(NodeClass)
+
+        } else if (KonvaGlobal[className as keyof typeof KonvaGlobal]) {
+            const NodeClass = KonvaGlobal[className as keyof typeof KonvaGlobal]
+            return KonvaLoadation(NodeClass)
+        } else {
+            Util.warn(
+                'Can not find a node with class name "' +
+                className +
+                '". Fallback to "Shape".'
+            );
+            className = 'Shape';
+            const NodeClass = KonvaGlobal[className as keyof typeof KonvaGlobal]
+            return KonvaLoadation(NodeClass);
+        }
+    }
+}
+
 
 export default class Classzu {
     
@@ -8,6 +89,7 @@ export default class Classzu {
     private stage: Konva.Stage
     private html: HTMLElement
 
+    public Node: any = Node
 
     constructor() {
 
@@ -56,7 +138,10 @@ export default class Classzu {
 
         const clickToCreateClass = (e: Event): void => {
             const layer = this.stage.getLayers()[0]
-            layer.add(new Class())
+            const _class = Class.generate()
+            layer.add(_class)
+            console.log(_class)
+
             return e.preventDefault()
         }
 
@@ -67,8 +152,11 @@ export default class Classzu {
         }
 
         const clickToLoadStage = (e: Event): void => {
-            const data = localStorage.getItem(Config.Storage.local.name)
-            this.stage = Konva.Node.create(data, this.elementId);
+            const json = localStorage.getItem(Config.Storage.local.name)
+            const data = JSON.parse(json ? json : '')
+
+            this.stage = this.Node.create(json, this.elementId);
+            console.log(this.stage.getLayers()[0].getChildren())
             return e.preventDefault();
         }
 

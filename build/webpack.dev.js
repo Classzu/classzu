@@ -5,6 +5,7 @@ const {merge}= require("webpack-merge");
 module.exports = merge(common, {
 
     mode: "development",
+    devtool: 'inline-source-map',
     output: {
         path: path.resolve(__dirname, '../test-dist'),
         filename: '[name].js',
