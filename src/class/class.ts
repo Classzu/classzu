@@ -9,17 +9,59 @@ type KonvaJsonData = {
 }
 
 const ClassNameConfig = {
-    this: "Class",
+    className: "Class",
     rect: "ClassRect"
 }
 
+function createElementFromHTML(htmlString: string): Element | null {
+    const tempEl = document.createElement('div');
+    tempEl.innerHTML = htmlString;
+    return tempEl.firstElementChild;
+}
+const useMenu = (_class: Class, html: HTMLElement) => {
+    const id = `class_${_class._id}`;
+    const colorNames = Object.keys(Config.Class.color)
+    const { x, y } = _class.getTopLeftPosition()
+
+    let menuString = `
+        <div id="${id}" style="top: ${y}px; left: ${x}px; cursor: default; position: absolute;" class="bg-dark p-2">
+    `;
+    for (let i = 0; i < colorNames.length; i++) {
+        const colorName = colorNames[i];
+        menuString += `
+            <button class="btn ${colorName}">${colorName}</button>
+        `
+    }
+    menuString += `
+        </div>
+    `;
+
+    const element = createElementFromHTML(menuString)
+    if (element !== null) {
+        
+        html.append(element);
+    };
+
+    const menu = document.querySelector(`#${id}`);
+    
+
+    for (let i = 0; i < colorNames.length; i++) {
+        const colorName = colorNames[i];
+        document.querySelector(`.${colorName}`)?.addEventListener('click', (e) => {
+            _class.setColor(Config.Class.color[colorName])
+            menu?.remove();
+        })
+
+    }
+
+}
 class Class extends Konva.Group {
     private rect: Konva.Rect;
     public className: string
 
     public constructor(data?: KonvaJsonData[]) {
         super()
-        this.className = ClassNameConfig.this
+        this.className = ClassNameConfig.className
 
         let obj = {}
         
@@ -50,14 +92,14 @@ class Class extends Konva.Group {
         this.rect = new Konva.Rect(obj)
         
     }
-    public listen(){
+    public getTopLeftPosition() {
+        return this.rect.getAbsolutePosition()
+    }
+    public listen(html: HTMLElement){
         this.rect.on('click', () => {
-            this.rect.fill('#aa0000')
+            useMenu(this, html)
         })
         return this;
-    }
-    public load(data: any) {
-        
     }
     public group() {
         this.add(this.rect)
@@ -65,7 +107,11 @@ class Class extends Konva.Group {
     }
 
     static generate(data?: KonvaJsonData[]) {
-        return new Class(data).group().listen()
+        return new Class(data).group()/* .listen() */
+    }
+
+    public setColor(colorCode: string) {
+        this.rect.fill(colorCode);
     }
 
 }
