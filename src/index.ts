@@ -1,4 +1,3 @@
-
-import Classzu from "./main";
+import Classzu from "./Classzu";
 
 export default Classzu;

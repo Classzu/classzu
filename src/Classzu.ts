@@ -1,115 +1,10 @@
 import Konva from 'konva';
-import { Util } from 'konva/lib/Util';
-import { Konva as KonvaGlobal } from 'konva/lib/Global'
-import Class from './class/class';
+
+import Class from './Class';
 import Config from './config/index'
-import { getUniqueStr } from './utils/index'
+import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId } from './utils/index'
+import ClasszuLoader from './ClasszuLoader'
 
-type ClasszuNodeType = {
-    Class: any
-}
-
-const ClasszuNode: ClasszuNodeType = {
-    "Class": Class
-}
-
-
-function getPxString(num: number): string {
-    return `${num}px`
-}
-const ElementIds = {
-    konva: 'konva-stage',
-    gui: 'gui-div'
-}
-
-function getClasszuElement(id: string, id2: keyof typeof ElementIds): HTMLElement{
-    const uniqueId = getClasszuElementId(id, id2);
-    const guiElement : HTMLElement | null = document.getElementById(uniqueId)
-
-    if (!guiElement) {
-        new Error(`Cannot find element to add GUI, Searched by (#${uniqueId}`)
-        const damyElement = document.createElement('div')
-        return damyElement
-    }
-
-    return guiElement;
-}
-function getClasszuElementId(id: string, id2: keyof typeof ElementIds) {
-    return `${id}-${ElementIds[id2]}`
-}
-
-/**
- * Quote
- * https://github.com/konvajs/konva/blob/80802f59f1001caa25aea9d702a735f24a631449/src/Node.ts#L2562-L2616
- * need to refactor type
- */
-class ClasszuLoader {
-    private json: string
-    private classzuId: string
-
-
-    constructor(json: string, classzuId: string) {
-        this.json = json
-        this.classzuId = classzuId
-    }
-    public create() {
-        if (Util._isString(this.json)) {
-            const data = JSON.parse(this.json);
-            const konvaId = getClasszuElementId(this.classzuId, "konva")
-            return this._createNode(data, konvaId);
-        }
-    }
-
-    private _createNode(obj: any, konvaId?: string) {
-
-        let className: string = obj.className ,
-        children = obj.children,
-        no,
-        len,
-        n;
-
-        // if container was passed in, add it to attrs
-        if (konvaId) {
-            obj.attrs.container = konvaId;
-        }
-
-        const createChildren = (parent: any) => {
-            if (children) {
-                len = children.length;
-                for (n = 0; n < len; n++) {
-                    parent.add(this._createNode(children[n]));
-                }
-            }
-        }
-        const ClasszuLoadation = (NodeClass: any) => {
-            const element: HTMLElement = getClasszuElement(this.classzuId, "gui")
-            no = new NodeClass(obj.children).group().listen(element);
-            return no;
-        }
-        const KonvaLoadation = (NodeClass: any) => {
-            no = new NodeClass(obj.attrs);
-            createChildren(no)
-            return no
-        }
-
-
-        if (ClasszuNode[className as keyof ClasszuNodeType]) {
-            const NodeClass = ClasszuNode[className as keyof ClasszuNodeType];
-            return ClasszuLoadation(NodeClass)
-        } else {
-            if (!KonvaGlobal[className as keyof typeof KonvaGlobal]) {
-                Util.warn(
-                    'Can not find a node with class name "' +
-                    className +
-                    '". Fallback to "Shape".'
-                );
-                className = 'Shape';
-            } 
-            const NodeClass = KonvaGlobal[className as keyof typeof KonvaGlobal]
-            return KonvaLoadation(NodeClass);
-        }
-    }
-}
 
 export default class Classzu {
     
@@ -142,7 +37,7 @@ export default class Classzu {
          * build konva Element
          */
         const konvaElement: HTMLDivElement = document.createElement('div')
-        konvaElement.id = `${id}-${ElementIds.konva}`
+        konvaElement.id = getClasszuElementId(id, "konva")
         konvaElement.style.width = getPxString(rootElement.clientWidth)
         konvaElement.style.height = getPxString(rootElement.clientHeight)
         rootElement.append(konvaElement)
@@ -151,7 +46,7 @@ export default class Classzu {
          * build GUI Element
          */
         const guiElement: HTMLDivElement = document.createElement('div')
-        guiElement.id = `${id}-${ElementIds.gui}`
+        guiElement.id = getClasszuElementId(id, "gui")
         guiElement.style.position = "absolute"
         guiElement.style.top = "0px"
 

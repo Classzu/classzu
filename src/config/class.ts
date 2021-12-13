@@ -19,6 +19,7 @@ const Class: ClassConfig = {
     color: {
         black: "#000000",
         red: "#ff0000",
+        blue: "#0000ff"
     },
     fillColor: {
         gray: "#bbc8d3",

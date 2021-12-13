@@ -1,23 +1,16 @@
 import Konva from 'konva';
-import Config from '../config'
-type KonvaJsonData = {
-    attrs: {
-        name: string
-    }
-    children: KonvaJsonData[]
-    className: string
-}
+import Config from './config'
+
+import { createElementFromHTML } from './utils/index'
+import { KonvaJsonData } from './types';
+
 
 const ClassNameConfig = {
     className: "Class",
     rect: "ClassRect"
 }
 
-function createElementFromHTML(htmlString: string): Element | null {
-    const tempEl = document.createElement('div');
-    tempEl.innerHTML = htmlString;
-    return tempEl.firstElementChild;
-}
+
 const useMenu = (_class: Class, html: HTMLElement) => {
     const id = `class_${_class._id}`;
     const colorNames = Object.keys(Config.Class.color)
@@ -55,7 +48,7 @@ const useMenu = (_class: Class, html: HTMLElement) => {
     }
 
 }
-class Class extends Konva.Group {
+export default class Class extends Konva.Group {
     private rect: Konva.Rect;
     public className: string
 
@@ -92,28 +85,24 @@ class Class extends Konva.Group {
         this.rect = new Konva.Rect(obj)
         
     }
-    public getTopLeftPosition() {
-        return this.rect.getAbsolutePosition()
+    static generate(data?: KonvaJsonData[]): Class {
+        return new Class(data).group()/* .listen() */
     }
-    public listen(html: HTMLElement){
+    public listen(html: HTMLElement): Class{
         this.rect.on('click', () => {
             useMenu(this, html)
         })
         return this;
     }
-    public group() {
+    public group(): Class {
         this.add(this.rect)
         return this;
     }
-
-    static generate(data?: KonvaJsonData[]) {
-        return new Class(data).group()/* .listen() */
-    }
-
-    public setColor(colorCode: string) {
+    public setColor(colorCode: string): void {
         this.rect.fill(colorCode);
+    }
+    public getTopLeftPosition(): {x:number, y:number} {
+        return this.rect.getAbsolutePosition()
     }
 
 }
-
-export default Class
