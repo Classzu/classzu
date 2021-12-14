@@ -2,9 +2,10 @@ import Konva from 'konva';
 
 import Class from './Class';
 import Config from './config/index'
-import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId } from './utils/index'
+import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, createElementFromHTML } from './utils/index'
 import ClasszuLoader from './ClasszuLoader'
-
+import LocalStorageFileSystem from './Storage/Local';
+import { Directory, File } from './Storage';
 
 export default class Classzu {
     
@@ -12,6 +13,8 @@ export default class Classzu {
     private stage: Konva.Stage
 
     public Node: any = Node
+
+    public currentFilePath: string | null = null
 
     constructor(id?: string) {
 
@@ -68,14 +71,12 @@ export default class Classzu {
         const guiElement : HTMLElement = getClasszuElement(this.rootElementId, "gui")
 
         guiElement.innerHTML = `
-            <div style="top: 10px; left: 10px; cursor: default; position: absolute;" class="bg-dark p-2" pointer-events="all">
-                <button class="btn ${Config.GUI.class.create}">button</button>
-                <button class="btn ${Config.GUI.storage.local.save}">save</button>
-                <button class="btn ${Config.GUI.storage.local.load}">load</button>
+            <div  style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+                <button class="btn ${Config.GUI.class.create}">Create Class</button>
             </div>
         `
 
-        const clickToCreateClass = (e: Event): void => {
+        const createClass = (e: Event): void => {
             
             const html: HTMLElement = getClasszuElement(this.rootElementId, "gui")
             const _class = new Class().group().listen(html)
@@ -87,32 +88,174 @@ export default class Classzu {
             return e.preventDefault()
         }
 
-        const clickToSaveStage = (e: Event): void => {
-            const data = this.stage.toJSON()
-            localStorage.setItem(Config.Storage.local.name, data);
+        document.querySelector(`.${Config.GUI.class.create}`)?.addEventListener('click', createClass.bind(this))
+
+        return this;
+
+    }
+    public useLocalFileSystem() {
+
+        const guiElement: HTMLElement = getClasszuElement(this.rootElementId, "gui")
+
+        /**
+         * Create Buttons
+         */
+
+        let buttonsHTML = `
+            <div style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+                <div>
+                    <button class="btn ${Config.GUI.storage.local.clear}">clear</button>
+                </div>
+                <div>
+                    <div class="update-file">
+                        <input type="text"/>
+                        <button class="btn">save</button>
+                    </div>
+                    <div class="add-file">
+                        <input type="text"/>
+                        <button class="btn">Add File</button>
+                    </div>
+                </div>
+            </div>
+        `
+
+        guiElement.append(createElementFromHTML(buttonsHTML) as Element)
+
+        /**
+         * Add Listeners to BUttons
+         */
+        const saveStage = (e: Event): void => {
+
+            /**
+             * need to refactor. not reusable
+             */
+            const input = document.querySelector('.update-file input') as HTMLInputElement
+            const obj = {
+                name: input.value,
+                data: this.stage.toJSON()
+            }
+
+            if (input.name !== this.currentFilePath) {
+                new LocalStorageFileSystem().delete('', this.currentFilePath as string)
+                new LocalStorageFileSystem().createFile('', obj)
+            }
+
+            new LocalStorageFileSystem().updateFile('', obj)
+            reRender(Config.GUI.storage.local.fileTree, guiElement)
+            reListen()
+            return e.preventDefault();
+        }
+        const clearStorage = (e: Event): void => {
+            localStorage.removeItem(Config.Storage.local.name)
+            reRender(Config.GUI.storage.local.fileTree, guiElement)
+            reListen()
+        }
+        const addFile = (e: Event) => {
+            const input = document.querySelector('.add-file input') as HTMLInputElement
+            const newStage = this.stage.clone()
+            newStage.getLayers()[0].destroyChildren()
+
+            const obj = {
+                name: input.value,
+                data: newStage.toJSON()
+            }
+            new LocalStorageFileSystem().createFile('', obj)
+
+            reRender(Config.GUI.storage.local.fileTree, guiElement)
+            reListen()
+
+            input.value = ''
             return e.preventDefault();
         }
 
-        const clickToLoadStage = (e: Event): void => {
-            const json = localStorage.getItem(Config.Storage.local.name)
-            if (json === null) {
+        document.querySelector(`.${Config.GUI.storage.local.clear}`)?.addEventListener('click', clearStorage.bind(this))
+        document.querySelector(`.update-file button`)?.addEventListener('click', saveStage.bind(this))
+        document.querySelector(`.add-file button`)?.addEventListener('click', addFile.bind(this))
+
+
+        /**
+         * Create FileTree
+         */
+
+        const fileTreeHTML = getFileTreeHTML(Config.GUI.storage.local.fileTree)
+        guiElement.append(createElementFromHTML(fileTreeHTML) as Element)
+
+        /**
+         * Add Listeners to Files
+         */
+        const setFileNameToUpdateInput = (name: string) => {
+            const input = document.querySelector('.update-file input') as HTMLInputElement
+            input.value = name;
+        }
+        const loadStage = (directPath: string): void => {
+            const file: File | null = new LocalStorageFileSystem().getFile(directPath)
+            if ( file === null || file.data === null ) {
                 new Error('LocalStorage is Empty')
                 return;
             }
-            this.stage = new ClasszuLoader(json, this.rootElementId).create();
-            return e.preventDefault();
+            setFileNameToUpdateInput(file.name)
+            this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
+            this.currentFilePath = file.name
         }
 
-        document.querySelector(`.${Config.GUI.class.create}`)?.addEventListener('click', clickToCreateClass.bind(this))
-        document.querySelector(`.${Config.GUI.storage.local.save}`)?.addEventListener('click', clickToSaveStage.bind(this))
-        document.querySelector(`.${Config.GUI.storage.local.load}`)?.addEventListener('click', clickToLoadStage.bind(this))
+        const getLoadFileListener = (directPath: string) => {
+            return (e: Event) => {
+                loadStage(directPath);
+                return e.preventDefault();
+            }
+        }
+
+
+        const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
+
+        fileElements.forEach(fileElement => {
+            // 今は名前だけでパスとする。本当は親ディレクトリとかの名前もゲットしてパスを作り上げたい。
+            const directPath = fileElement.innerHTML
+            fileElement.addEventListener('click', getLoadFileListener(directPath))
+        });
+
+        /**
+         * revive functions
+         */
+        function reRender(id: string, element: HTMLElement) {
+            document.getElementById(id)?.remove()
+            const htmlString = getFileTreeHTML(id)
+            element.append(createElementFromHTML(htmlString) as Element)
+        }
+        function reListen() {
+            const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
+
+            fileElements.forEach(fileElement => {
+                // 今は名前だけでパスとする。本当は親ディレクトリとかの名前もゲットしてパスを作り上げたい。
+                const directPath = fileElement.innerHTML
+                console.log(directPath)
+                fileElement.addEventListener('click', getLoadFileListener(directPath))
+            });
+        }
 
         return this;
 
     }
-    public useLocalDirectorySystem() {
-        
-        return this;
+}
 
+function getFileTreeHTML(id: string) {
+    const rootDir: Directory = new LocalStorageFileSystem().get()
+    let ite = rootDir.files;
+
+    let fileTreeHTML = `
+        <div id="${id}" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+    `
+    for (const key in ite) {
+        if (ite[key].type === "File") {
+            const file = ite[key]
+            fileTreeHTML += `
+                <div class="file ${file.name}">${file.name}</div>
+            `
+        }
     }
+    fileTreeHTML +=`
+        </div>
+    `
+
+    return fileTreeHTML;
 }

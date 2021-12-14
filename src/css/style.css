@@ -9,3 +9,17 @@
 .hello {
     color: black;
 }
+
+.file {
+    background-color: #fff;
+    padding: 10px;
+    width: 100px;
+    height: 50px;
+    border: #888888 solid 1px;
+}
+.dir {
+    padding: 10px;
+    width: 100px;
+    height: 50px;
+    border: #888888 solid 1px;
+}

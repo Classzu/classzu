@@ -26,7 +26,7 @@ const Class: ClassConfig = {
         red: "#ff0000"
     },
     position: {
-        x: 200,
+        x: 400,
         y: 200,
     },
     size: {

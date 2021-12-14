@@ -6,7 +6,9 @@ const GUI = {
     storage: {
         local: {
             save: 'gui-storage-local-save',
-            load: 'gui-storage-local-local'
+            load: 'gui-storage-local-local',
+            clear: 'gui-storage-local-clear',
+            fileTree: "file-tree"
         },
     }
 }
