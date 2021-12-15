@@ -141,14 +141,14 @@ export default class Classzu {
             }
 
             new LocalStorageFileSystem().updateFile('', obj)
-            reRender(Config.GUI.storage.local.fileTree, guiElement)
-            reListen()
+            reRenderFileTree()
+            reListenFileTree()
             return e.preventDefault();
         }
         const clearStorage = (e: Event): void => {
             localStorage.removeItem(Config.Storage.local.name)
-            reRender(Config.GUI.storage.local.fileTree, guiElement)
-            reListen()
+            reRenderFileTree()
+            reListenFileTree()
         }
         const addFile = (e: Event) => {
             const input = document.querySelector('.add-file input') as HTMLInputElement
@@ -161,8 +161,8 @@ export default class Classzu {
             }
             new LocalStorageFileSystem().createFile('', obj)
 
-            reRender(Config.GUI.storage.local.fileTree, guiElement)
-            reListen()
+            reRenderFileTree()
+            reListenFileTree()
 
             input.value = ''
             return e.preventDefault();
@@ -176,9 +176,37 @@ export default class Classzu {
         /**
          * Create FileTree
          */
+        const getFileTreeHTML = (id: string) => {
+            const rootDir: Directory = new LocalStorageFileSystem().get()
+            let ite = rootDir.files;
 
-        const fileTreeHTML = getFileTreeHTML(Config.GUI.storage.local.fileTree)
-        guiElement.append(createElementFromHTML(fileTreeHTML) as Element)
+            let fileTreeHTML = `
+                <div id="${id}" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+            `
+            for (const key in ite) {
+                if (ite[key].type === "File") {
+                    const file = ite[key]
+                    fileTreeHTML += `
+                        <div class="file ${file.name}">${file.name}</div>
+                    `
+                }
+            }
+            fileTreeHTML +=`
+                </div>
+            `
+
+            return fileTreeHTML;
+        }
+        const renderFileTree =() => {
+            const fileTreeHTML = getFileTreeHTML(Config.GUI.storage.local.fileTree)
+            guiElement.append(createElementFromHTML(fileTreeHTML) as Element)
+        }
+        const reRenderFileTree = () => {
+            document.getElementById(Config.GUI.storage.local.fileTree)?.remove()
+            renderFileTree()
+        }
+
+        renderFileTree()
 
         /**
          * Add Listeners to Files
@@ -204,25 +232,7 @@ export default class Classzu {
                 return e.preventDefault();
             }
         }
-
-
-        const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
-
-        fileElements.forEach(fileElement => {
-            // 今は名前だけでパスとする。本当は親ディレクトリとかの名前もゲットしてパスを作り上げたい。
-            const directPath = fileElement.innerHTML
-            fileElement.addEventListener('click', getLoadFileListener(directPath))
-        });
-
-        /**
-         * revive functions
-         */
-        function reRender(id: string, element: HTMLElement) {
-            document.getElementById(id)?.remove()
-            const htmlString = getFileTreeHTML(id)
-            element.append(createElementFromHTML(htmlString) as Element)
-        }
-        function reListen() {
+        const listenFileTree = () => {
             const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
 
             fileElements.forEach(fileElement => {
@@ -232,30 +242,14 @@ export default class Classzu {
                 fileElement.addEventListener('click', getLoadFileListener(directPath))
             });
         }
+        const reListenFileTree = () => {
+            listenFileTree()
+        }
 
+
+        listenFileTree()
+        
         return this;
 
     }
-}
-
-function getFileTreeHTML(id: string) {
-    const rootDir: Directory = new LocalStorageFileSystem().get()
-    let ite = rootDir.files;
-
-    let fileTreeHTML = `
-        <div id="${id}" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
-    `
-    for (const key in ite) {
-        if (ite[key].type === "File") {
-            const file = ite[key]
-            fileTreeHTML += `
-                <div class="file ${file.name}">${file.name}</div>
-            `
-        }
-    }
-    fileTreeHTML +=`
-        </div>
-    `
-
-    return fileTreeHTML;
 }

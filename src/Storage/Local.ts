@@ -93,7 +93,6 @@ export default class LocalStorageFileSystem {
         }
 
         directory.files[params.name] = new File(params)
-        console.log(this.rootDir)
         this.save()
     }
     public getFile(directPath: string): File | null {
