@@ -1,10 +1,9 @@
 import Config from "../../config"
 import { Directory } from "../../Storage";
-import LocalStorageFileSystem from "../../Storage/Local";
 import { createElementFromHTML } from "../../utils"
 
-const getFileTreeHTML = (id: string) => {
-    const rootDir: Directory = new LocalStorageFileSystem().get()
+const getFileTreeHTML = ({ id, rootDir }: { id: string, rootDir: Directory}) => {
+
     let ite = rootDir.files;
 
     let fileTreeHTML = `
@@ -25,9 +24,12 @@ const getFileTreeHTML = (id: string) => {
     return fileTreeHTML;
 }
 
-const getLocalFileSystemTreeHTML = () => {
+const getLocalFileSystemTreeHTML = (rootDir: Directory) => {
     return createElementFromHTML(
-        getFileTreeHTML(Config.GUI.storage.local.fileTree)
+        getFileTreeHTML({
+            id: Config.GUI.storage.local.fileTree,
+            rootDir: rootDir
+        })
     ) as Element
 }
 export default getLocalFileSystemTreeHTML

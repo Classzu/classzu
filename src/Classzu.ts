@@ -153,7 +153,7 @@ export default class Classzu {
 
             input.value = ''
             return e.preventDefault();
-            
+
         }
 
         document.querySelector(`.${Config.GUI.storage.local.clear}`)?.addEventListener('click', clearStorage.bind(this))
@@ -165,8 +165,9 @@ export default class Classzu {
          * Create FileTree
          */
         const renderFileTree = () => {
-
-            const fileTreeHTML = getLocalFileSystemTreeHTML()
+            
+            const rootDir = new LocalStorageFileSystem().get()
+            const fileTreeHTML = getLocalFileSystemTreeHTML(rootDir)
             guiElement.append(fileTreeHTML)
 
         }
@@ -183,10 +184,13 @@ export default class Classzu {
          * Add Listeners to Files
          */
         const setFileNameToUpdateInput = (name: string) => {
+
             const input = document.querySelector('.update-file input') as HTMLInputElement
             input.value = name;
+
         }
         const loadStage = (directPath: string): void => {
+
             const file: File | null = new LocalStorageFileSystem().getFile(directPath)
             if ( file === null || file.data === null ) {
                 new Error('LocalStorage is Empty')
@@ -195,28 +199,32 @@ export default class Classzu {
             setFileNameToUpdateInput(file.name)
             this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
             this.currentFilePath = file.name
-        }
 
+        }
         const getLoadFileListener = (directPath: string) => {
+
             return (e: Event) => {
                 loadStage(directPath);
                 return e.preventDefault();
             }
+
         }
         const listenFileTree = () => {
-            const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
 
+            const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
             fileElements.forEach(fileElement => {
                 // 今は名前だけでパスとする。本当は親ディレクトリとかの名前もゲットしてパスを作り上げたい。
                 const directPath = fileElement.innerHTML
                 console.log(directPath)
                 fileElement.addEventListener('click', getLoadFileListener(directPath))
             });
+
         }
         const reListenFileTree = () => {
-            listenFileTree()
-        }
 
+            listenFileTree()
+
+        }
 
         listenFileTree()
         
