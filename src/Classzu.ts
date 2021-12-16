@@ -7,6 +7,13 @@ import ClasszuLoader from './ClasszuLoader'
 import LocalStorageFileSystem from './Storage/Local';
 import { Directory, File } from './Storage';
 
+/**
+ * HTML getters
+ */
+import getGuiHTML from './tamplates/gui/index'
+import getLocalFileSystemFormHTML from './tamplates/localFileSystem/form';
+import getLocalFileSystemTreeHTML from './tamplates/localFileSystem/fileTree';
+
 export default class Classzu {
     
     private rootElementId: string
@@ -68,24 +75,17 @@ export default class Classzu {
 
     }
     public useGUI(): Classzu {
-        const guiElement : HTMLElement = getClasszuElement(this.rootElementId, "gui")
 
-        guiElement.innerHTML = `
-            <div  style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
-                <button class="btn ${Config.GUI.class.create}">Create Class</button>
-            </div>
-        `
+        const guiElement: HTMLElement = getClasszuElement(this.rootElementId, "gui")
+        guiElement.append(getGuiHTML())
 
         const createClass = (e: Event): void => {
             
-            const html: HTMLElement = getClasszuElement(this.rootElementId, "gui")
-            const _class = new Class().group().listen(html)
-
+            const _class = new Class().group().listen(guiElement)
             const layer = this.stage.getLayers()[0]
             layer.add(_class)
-            console.log(_class)
-
             return e.preventDefault()
+
         }
 
         document.querySelector(`.${Config.GUI.class.create}`)?.addEventListener('click', createClass.bind(this))
@@ -101,28 +101,11 @@ export default class Classzu {
          * Create Buttons
          */
 
-        let buttonsHTML = `
-            <div style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
-                <div>
-                    <button class="btn ${Config.GUI.storage.local.clear}">clear</button>
-                </div>
-                <div>
-                    <div class="update-file">
-                        <input type="text"/>
-                        <button class="btn">save</button>
-                    </div>
-                    <div class="add-file">
-                        <input type="text"/>
-                        <button class="btn">Add File</button>
-                    </div>
-                </div>
-            </div>
-        `
-
-        guiElement.append(createElementFromHTML(buttonsHTML) as Element)
+        const formHTML = getLocalFileSystemFormHTML()
+        guiElement.append(formHTML)
 
         /**
-         * Add Listeners to BUttons
+         * Add Listeners to form items
          */
         const saveStage = (e: Event): void => {
 
@@ -144,13 +127,17 @@ export default class Classzu {
             reRenderFileTree()
             reListenFileTree()
             return e.preventDefault();
+
         }
         const clearStorage = (e: Event): void => {
+
             localStorage.removeItem(Config.Storage.local.name)
             reRenderFileTree()
             reListenFileTree()
+
         }
         const addFile = (e: Event) => {
+
             const input = document.querySelector('.add-file input') as HTMLInputElement
             const newStage = this.stage.clone()
             newStage.getLayers()[0].destroyChildren()
@@ -166,6 +153,7 @@ export default class Classzu {
 
             input.value = ''
             return e.preventDefault();
+            
         }
 
         document.querySelector(`.${Config.GUI.storage.local.clear}`)?.addEventListener('click', clearStorage.bind(this))
@@ -176,34 +164,17 @@ export default class Classzu {
         /**
          * Create FileTree
          */
-        const getFileTreeHTML = (id: string) => {
-            const rootDir: Directory = new LocalStorageFileSystem().get()
-            let ite = rootDir.files;
+        const renderFileTree = () => {
 
-            let fileTreeHTML = `
-                <div id="${id}" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
-            `
-            for (const key in ite) {
-                if (ite[key].type === "File") {
-                    const file = ite[key]
-                    fileTreeHTML += `
-                        <div class="file ${file.name}">${file.name}</div>
-                    `
-                }
-            }
-            fileTreeHTML +=`
-                </div>
-            `
+            const fileTreeHTML = getLocalFileSystemTreeHTML()
+            guiElement.append(fileTreeHTML)
 
-            return fileTreeHTML;
-        }
-        const renderFileTree =() => {
-            const fileTreeHTML = getFileTreeHTML(Config.GUI.storage.local.fileTree)
-            guiElement.append(createElementFromHTML(fileTreeHTML) as Element)
         }
         const reRenderFileTree = () => {
+
             document.getElementById(Config.GUI.storage.local.fileTree)?.remove()
             renderFileTree()
+
         }
 
         renderFileTree()
