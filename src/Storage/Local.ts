@@ -1,7 +1,6 @@
 import Config from "../config";
 import { Directory, File, FileParams } from ".";
 
-
 export default class LocalStorageFileSystem {
     private rootDir: Directory
 

@@ -10,6 +10,7 @@
     "clean-css": "^5.2.2",
     "css-loader": "^6.5.1",
     "html-webpack-plugin": "^5.5.0",
+    "localstoragedb": "^2.3.2",
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.2.6",
@@ -21,7 +22,7 @@
   "scripts": {
     "build": "tsc & cleancss -o dist/style.min.css src/css/style.css",
     "prepublishOnly": "npm run build",
-    "test": "webpack serve --config build/webpack.dev.js"
+    "start": "webpack serve --config build/webpack.dev.js"
   },
   "author": "mcnleandro",
   "license": "MIT",
