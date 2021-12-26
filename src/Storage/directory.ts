@@ -1,21 +1,25 @@
 export default class Directory {
+    public ID: number
     public name: string
-    public parentDirectoryId: number
+    public parentDirectoryId: number | null
     
-    public constructor({ name, parentDirectoryId }: {
+    public constructor({ ID, name, parentDirectoryId }: {
+        ID: number,
         name: string,
-        parentDirectoryId: number,
+        parentDirectoryId: number | null,
     }) {
+        this.ID = ID
         this.name = name
         this.parentDirectoryId = parentDirectoryId
     }
 }
 
 export class DirectoryNullable{
-
+    public ID: number | null
     public name: string | null
     public parentDirectoryId: number | null
     constructor(obj?: { [key: string]: any }) {
+        this.ID = obj?.ID || null
         this.name = obj?.name || null
         this.parentDirectoryId = obj?.parentDirectoryId || null
     }
