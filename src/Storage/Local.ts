@@ -69,6 +69,9 @@ export default class LocalStorageFileSystem {
         return this.getFile(ID);
     }
     public updateFile(oldFile: File, newFile: FileNullable): File {
+        //https://github.com/knadh/localStorageDB # update()
+        // >  returns the number of rows affected
+        // but it seems returnning nunmbe as booelan?
         const ID = this.db.update(File.name, { ID: oldFile.ID }, function (row) {
             for (const key in newFile) {
                 if (key !== "ID") {
@@ -78,7 +81,7 @@ export default class LocalStorageFileSystem {
             return row
         })
         this.db.commit()
-        return this.getFile(ID)
+        return this.getFile(oldFile.ID)
     }
     public updateDirectory(oldDirectory: Directory, newDirectory: DirectoryNullable): Directory {
         //https://github.com/knadh/localStorageDB # update()

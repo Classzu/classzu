@@ -104,7 +104,7 @@ export default class Classzu {
         const formHTML = getLocalFileSystemFormHTML()
         guiElement.append(formHTML)
 
-        const { clear, file, directory } = Config.GUI.storage.local;
+        const selector = Config.GUI.storage.local;
 
         /**
          * REST functions for Directory form listeners
@@ -116,10 +116,10 @@ export default class Classzu {
             show(ID: number) {
                 const dir: Directory = new LocalStorageFileSystem().getDirectory(ID)
 
-                const showIdSelector = `.${directory.show} input[name="id"]`
-                const showNameSelector = `.${directory.show} input[name="name"]`
-                const editNameSelector = `.${directory.edit} input[name="name"]`
-                const showDirIdSelector = `.${directory.show} input[name="directoryId"]`
+                const showIdSelector = `.${selector.directory.show} input[name="id"]`
+                const showNameSelector = `.${selector.directory.show} input[name="name"]`
+                const editNameSelector = `.${selector.directory.edit} input[name="name"]`
+                const showDirIdSelector = `.${selector.directory.show} input[name="directoryId"]`
 
                 const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
                 const showName: HTMLInputElement | null = document.querySelector(showNameSelector)
@@ -138,8 +138,8 @@ export default class Classzu {
                 new LocalStorageFileSystem().showDirectories()
             }
             create() {
-                const newNameSelector = `.${directory.new} input[name="name"]`
-                const showIdSelector = `.${directory.show} input[name="id"]`
+                const newNameSelector = `.${selector.directory.new} input[name="name"]`
+                const showIdSelector = `.${selector.directory.show} input[name="id"]`
 
                 const newName: HTMLInputElement | null = document.querySelector(newNameSelector)
                 const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
@@ -158,9 +158,9 @@ export default class Classzu {
                 this.show(dir.ID)
             }
             update() {
-                const editNameSelector = `.${directory.edit} input[name="name"]`
-                const showIdSelector = `.${directory.show} input[name="id"]`
-                const showDirIdSelector = `.${directory.show} input[name="directoryId"]`
+                const editNameSelector = `.${selector.directory.edit} input[name="name"]`
+                const showIdSelector = `.${selector.directory.show} input[name="id"]`
+                const showDirIdSelector = `.${selector.directory.show} input[name="directoryId"]`
 
                 const editName: HTMLInputElement | null = document.querySelector(editNameSelector)
                 const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
@@ -191,71 +191,106 @@ export default class Classzu {
         }
 
         new DirectoryREST().show(1)
-        document.querySelector(`.${clear}`)?.addEventListener('click', ()=>new LocalStorageFileSystem().drop())
-        document.querySelector(`.${directory.create}`)?.addEventListener('click', DirectoryREST.create)
-        document.querySelector(`.${directory.update}`)?.addEventListener('click', DirectoryREST.update)
+        document.querySelector(`.${selector.clear}`)?.addEventListener('click', ()=>new LocalStorageFileSystem().drop())
+        document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', DirectoryREST.create)
+        document.querySelector(`.${selector.directory.update}`)?.addEventListener('click', DirectoryREST.update)
 
         /**
          * REST functions for File form listeners
          */
-        const saveStage = (e: Event): void => {
 
-            /**
-             * need to refactor. not reusable
-             */
-            const input = document.querySelector(`.${file.edit} input`) as HTMLInputElement
-            const obj = {
-                name: input.value,
-                data: this.stage.toJSON()
+        class FileREST{
+            constructor() { }
+            
+            show(ID:number) {
+                const file: File = new LocalStorageFileSystem().getFile(ID)
+
+                const showIdSelector = `.${selector.file.show} input[name="id"]`
+                const showNameSelector = `.${selector.file.show} input[name="name"]`
+                const editNameSelector = `.${selector.file.edit} input[name="name"]`
+                const showDirIdSelector = `.${selector.file.show} input[name="directoryId"]`
+
+                const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
+                const showName: HTMLInputElement | null = document.querySelector(showNameSelector)
+                const editName: HTMLInputElement | null = document.querySelector(editNameSelector)
+                const showDirId: HTMLInputElement | null = document.querySelector(showDirIdSelector)
+
+                if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
+                if (!showName) throw new Error(`Cannot find Element with selector: '${showNameSelector}'`)
+                if (!editName) throw new Error(`Cannot find Element with selector: '${editNameSelector}'`)
+                if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
+                
+                showId.value = String(file.ID)
+                showName.value = file.name
+                editName.value = file.name
+                showDirId.value = String(file.directoryId)
+                new DirectoryREST().show(file.directoryId)
+                new LocalStorageFileSystem().showFiles()
+            }
+            create(stage: Konva.Stage) {
+                const newNameSelector = `.${selector.file.new} input[name="name"]`
+                const dirShowIdSelector = `.${selector.directory.show} input[name="id"]`
+
+                const newName: HTMLInputElement | null = document.querySelector(newNameSelector)
+                const dirShowId: HTMLInputElement | null = document.querySelector(dirShowIdSelector)
+
+                if (!newName) throw new Error(`Cannot find Element with selector: '${newNameSelector}'`)
+                if (!dirShowId) throw new Error(`Cannot find Element with selector: '${dirShowIdSelector}'`)
+
+                const newStage = stage.clone()
+                newStage.getLayers()[0].destroyChildren()
+                
+                const newFile: FileNullable = new FileNullable({
+                    name: newName.value,
+                    data: newStage.toJSON(),
+                    directoryId: parseInt(dirShowId.value)
+                })
+
+                newName.value = ''
+
+                const file = new LocalStorageFileSystem().createFile(newFile)
+                this.show(file.ID)
+            }
+            update(stage: Konva.Stage) {
+                const editNameSelector = `.${selector.file.edit} input[name="name"]`
+                const showIdSelector = `.${selector.file.show} input[name="id"]`
+                const showDirIdSelector = `.${selector.file.show} input[name="directoryId"]`
+
+                const editName: HTMLInputElement | null = document.querySelector(editNameSelector)
+                const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
+                const showDirId: HTMLInputElement | null = document.querySelector(showDirIdSelector)
+
+                if (!editName) throw new Error(`Cannot find Element with selector: '${editNameSelector}'`)
+                if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
+                if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
+
+                const oldFile: File = new LocalStorageFileSystem().getFile(parseInt(showId.value))
+                const newFile: FileNullable = new FileNullable({
+                    name: editName.value,
+                    data: stage.toJSON(),
+                    directoryId: parseInt(showDirId.value)
+                })
+
+                const file = new LocalStorageFileSystem().updateFile(oldFile, newFile)
+                this.show(file.ID)
+            }
+            delete() {
+                
             }
 
-            if (input.name !== this.currentFilePath) {
-                // new LocalStorageFileSystem().delete('', this.currentFilePath as string)
-                // new LocalStorageFileSystem().createFile('', obj)
+            static create(stage: Konva.Stage) {
+                new FileREST().create(stage)
             }
-
-            // new LocalStorageFileSystem().updateFile('', obj)
-            reRenderFileTree()
-            reListenFileTree()
-            return e.preventDefault();
-
-        }
-        const clearStorage = (e: Event): void => {
-
-            localStorage.removeItem(Config.Storage.local.name)
-            reRenderFileTree()
-            reListenFileTree()
-
-        }
-        const addFile = (e: Event) => {
-
-            const input = document.querySelector(`.${file.new} input`) as HTMLInputElement
-            const directoryId = 0 // FIXME:
-
-            const newStage = this.stage.clone()
-            newStage.getLayers()[0].destroyChildren()
-
-            const newFile = new FileNullable({
-                name: input.value,
-                data: newStage.toJSON(),
-                directoryId: directoryId
-            })
-            new LocalStorageFileSystem().createFile(newFile)
-
-            reRenderFileTree()
-            reListenFileTree()
-
-            input.value = ''
-            return e.preventDefault();
-
+            static update(stage: Konva.Stage) {
+                new FileREST().update(stage)
+            }
         }
 
         /**
          * Add Listeners to form items
          */        
-        // document.querySelector(`.${clear}`)?.addEventListener('click', clearStorage.bind(this))
-        document.querySelector(`.${file.edit} button`)?.addEventListener('click', saveStage.bind(this))
-        document.querySelector(`.${file.new} button`)?.addEventListener('click', addFile.bind(this))
+        document.querySelector(`.${selector.file.create}`)?.addEventListener('click', () => FileREST.create(this.stage))
+        document.querySelector(`.${selector.file.update}`)?.addEventListener('click', () => FileREST.update(this.stage))
 
 
         /**

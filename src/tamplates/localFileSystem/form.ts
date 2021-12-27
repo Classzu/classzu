@@ -44,9 +44,9 @@ const getLocalFileSystemFormHTML = () => {
 
                 <label>Current File</label>
                 <div class="${file.show}">
-                    <input type="text" class="id" disabled /> ID
+                    <input type="text" name="id" disabled /> ID
                     <input type="text" name="name" disabled /> Name
-                    <input type="text" class="directoryId" disabled /> DirID
+                    <input type="text" name="directoryId" disabled /> DirID
                 </div>
 
                 <label>Update File</label>
