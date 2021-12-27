@@ -19,46 +19,54 @@ const getLocalFileSystemFormHTML = () => {
             <details class="bg-white p-2 m-2 rounded" open>
                 <summary>Directory</summary>
 
-                <label>Current Directory</label>
+                <label><strong>Current Directory</strong></label>
                 <div class="${directory.show}">
-                    <input type="text" name="id" disabled /> ID
-                    <input type="text" name="name" disabled /> Name
-                    <input type="text" name="directoryId" disabled /> DirID
+                    <div><input type="text" name="id" placeholder="id" disabled /></div>
+                    <div><input type="text" name="name" placeholder="name" disabled /></div>
+                    <div><input type="text" name="directoryId" placeholder="directory id" disabled /></div>
                 </div>
 
-                <label>Update Directory</label>
+                <label><strong>Update</strong></label>
                 <div class="${directory.edit}">
-                    <input type="text" name="name" />
-                    <button class="${directory.update} btn">Update</button>
+                    <div><input type="text" name="name" placeholder="name" /></div>
+                    <div class="d-flex justify-content-end">
+                        <button class="${directory.update} btn">Update</button>
+                    </div>
                 </div>
 
-                <label>Create Directory</label>
+                <label><strong>Create</strong></label>
                 <div class="${directory.new}">
-                    <input type="text" name="name"/>
-                    <button class="${directory.create} btn">Create</button>
+                    <div><input type="text" name="name" placeholder="name"/></div>
+                    <div class="d-flex justify-content-end">
+                        <button class="${directory.create} btn">Create</button>
+                    </div>
                 </div>
             </details>
 
             <details class="bg-white p-2 m-2 rounded" open>
                 <summary>File</summary>
 
-                <label>Current File</label>
+                <label><strong>Current File</strong></label>
                 <div class="${file.show}">
-                    <input type="text" name="id" disabled /> ID
-                    <input type="text" name="name" disabled /> Name
-                    <input type="text" name="directoryId" disabled /> DirID
+                    <div><input type="text" name="id" placeholder="id" disabled /></div>
+                    <div><input type="text" name="name" placeholder="name" disabled /></div>
+                    <div><input type="text" name="directoryId" placeholder="directory id" disabled /></div>
                 </div>
 
-                <label>Update File</label>
+                <label><strong>Update </strong></label>
                 <div class="${file.edit}">
-                    <input type="text" name="name" />
-                    <button class="${file.update} btn">Update</button>
+                    <div><input type="text" name="name" placeholder="name" /></div>
+                    <div class="d-flex justify-content-end">
+                        <button class="${file.update} btn">Update</button>
+                    </div>
                 </div>
 
-                <label>Create File</label>
+                <label><strong>Create</strong></label>
                 <div class="${file.new}">
-                    <input type="text" name="name"/>
-                    <button class="${file.create} btn">Create</button>
+                    <div><input type="text" name="name" placeholder="name"/></div>
+                    <div class="d-flex justify-content-end">
+                        <button class="${file.create} btn">Create</button>
+                    </div>
                 </div>
             </details>
 
