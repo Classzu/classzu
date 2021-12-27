@@ -17,7 +17,7 @@ const getLocalFileSystemFormHTML = () => {
                     </div>
                 </details>
 
-                <details class="bg-white p-2 m-2 rounded" open>
+                <details class="bg-white p-2 m-2 rounded">
                     <summary>Directory</summary>
 
                     <label><strong>Current Directory</strong></label>
@@ -44,7 +44,7 @@ const getLocalFileSystemFormHTML = () => {
                     </div>
                 </details>
 
-                <details class="bg-white p-2 m-2 rounded" open>
+                <details class="bg-white p-2 m-2 rounded">
                     <summary>File</summary>
 
                     <label><strong>Current File</strong></label>

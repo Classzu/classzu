@@ -184,9 +184,11 @@ export default class Classzu {
             }
             static create() {
                 new DirectoryREST().create()
+                reRenderFileTree()
             }
             static update() {
                 new DirectoryREST().update()
+                reRenderFileTree()
             }
         }
 
@@ -280,9 +282,11 @@ export default class Classzu {
 
             static create(stage: Konva.Stage) {
                 new FileREST().create(stage)
+                reRenderFileTree()
             }
             static update(stage: Konva.Stage) {
                 new FileREST().update(stage)
+                reRenderFileTree()
             }
         }
 
@@ -310,7 +314,7 @@ export default class Classzu {
         }
         const reRenderFileTree = () => {
 
-            document.getElementById(Config.GUI.storage.local.fileTree)?.remove()
+            document.getElementById(selector.fileTree)?.remove()
             renderFileTree()
 
         }
