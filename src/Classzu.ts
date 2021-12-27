@@ -113,8 +113,9 @@ export default class Classzu {
 
 
             constructor() { }
-            show(ID: number) {
-                const dir: Directory = new LocalStorageFileSystem().getDirectory(ID)
+            show(a: number | Directory) {
+                
+                const dir: Directory = (typeof a === "number") ? new LocalStorageFileSystem().getDirectory(a) : a;
 
                 const showIdSelector = `.${selector.directory.show} input[name="id"]`
                 const showNameSelector = `.${selector.directory.show} input[name="name"]`
@@ -155,7 +156,7 @@ export default class Classzu {
                 newName.value = ''
 
                 const dir = new LocalStorageFileSystem().createDirectory(newDir)
-                this.show(dir.ID)
+                this.show(dir)
             }
             update() {
                 const editNameSelector = `.${selector.directory.edit} input[name="name"]`
@@ -177,7 +178,7 @@ export default class Classzu {
                 })
 
                 const dir = new LocalStorageFileSystem().updateDirectory(oldDir, newDir)
-                this.show(dir.ID)
+                this.show(dir)
             }
             delete() {
                 
@@ -185,15 +186,17 @@ export default class Classzu {
             static create() {
                 new DirectoryREST().create()
                 reRenderFileTree()
+                reListenFileTree()
             }
             static update() {
                 new DirectoryREST().update()
                 reRenderFileTree()
+                reListenFileTree()
             }
         }
 
         new DirectoryREST().show(1)
-        document.querySelector(`.${selector.clear}`)?.addEventListener('click', ()=>new LocalStorageFileSystem().drop())
+        document.querySelector(`.${selector.clear}`)?.addEventListener('click', () => new LocalStorageFileSystem().drop())
         document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', DirectoryREST.create)
         document.querySelector(`.${selector.directory.update}`)?.addEventListener('click', DirectoryREST.update)
 
@@ -204,8 +207,9 @@ export default class Classzu {
         class FileREST{
             constructor() { }
             
-            show(ID:number) {
-                const file: File = new LocalStorageFileSystem().getFile(ID)
+            show(a: number | File) {
+                
+                const file: File = (typeof a === "number") ? new LocalStorageFileSystem().getFile(a) : a;
 
                 const showIdSelector = `.${selector.file.show} input[name="id"]`
                 const showNameSelector = `.${selector.file.show} input[name="name"]`
@@ -251,7 +255,7 @@ export default class Classzu {
                 newName.value = ''
 
                 const file = new LocalStorageFileSystem().createFile(newFile)
-                this.show(file.ID)
+                this.show(file)
             }
             update(stage: Konva.Stage) {
                 const editNameSelector = `.${selector.file.edit} input[name="name"]`
@@ -274,7 +278,7 @@ export default class Classzu {
                 })
 
                 const file = new LocalStorageFileSystem().updateFile(oldFile, newFile)
-                this.show(file.ID)
+                this.show(file)
             }
             delete() {
                 
@@ -283,16 +287,19 @@ export default class Classzu {
             static create(stage: Konva.Stage) {
                 new FileREST().create(stage)
                 reRenderFileTree()
+                reListenFileTree()
             }
             static update(stage: Konva.Stage) {
                 new FileREST().update(stage)
                 reRenderFileTree()
+                reListenFileTree()
             }
         }
 
         /**
          * Add Listeners to form items
-         */        
+         */
+
         document.querySelector(`.${selector.file.create}`)?.addEventListener('click', () => FileREST.create(this.stage))
         document.querySelector(`.${selector.file.update}`)?.addEventListener('click', () => FileREST.update(this.stage))
 
@@ -324,42 +331,31 @@ export default class Classzu {
         /**
          * Add Listeners to Files
          */
-        const setFileNameToUpdateInput = (name: string) => {
+        const showFile = (file: File): void => {
 
-            const input = document.querySelector('.update-file input') as HTMLInputElement
-            input.value = name;
-
-        }
-        const loadStage = (directPath: string): void => {
-
-            // const file: File | null = new LocalStorageFileSystem().getFile(directPath)
-            // if ( file === null || file.data === null ) {
-            //     new Error('LocalStorage is Empty')
-            //     return;
-            // }
-            // setFileNameToUpdateInput(file.name)
-            // this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
-            // this.currentFilePath = file.name
+            new FileREST().show(file)
+            this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
 
         }
-        const getLoadFileListener = (directPath: string) => {
-
-            return (e: Event) => {
-                loadStage(directPath);
-                return e.preventDefault();
-            }
-
+        const listenFiles = () => {
+            const fileElements = getClasszuElement(this.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-file-id]`);
+            fileElements.forEach(fileElement => {
+                const id = parseInt(fileElement.getAttribute("data-file-id")!)
+                const file = new LocalStorageFileSystem().getFile(id)
+                fileElement.addEventListener('click', () => showFile(file))
+            });            
+        }
+        const listenDirectories = () => {
+            const dirElements = getClasszuElement(this.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-directory-id]`);
+            dirElements.forEach(dirElement => {
+                const id = parseInt(dirElement.getAttribute("data-directory-id")!)
+                const dir = new LocalStorageFileSystem().getDirectory(id)
+                dirElement.addEventListener('click', () => new DirectoryREST().show(dir))
+            });  
         }
         const listenFileTree = () => {
-
-            const fileElements = document.querySelectorAll(`#${Config.GUI.storage.local.fileTree} div`);
-            fileElements.forEach(fileElement => {
-                // 今は名前だけでパスとする。本当は親ディレクトリとかの名前もゲットしてパスを作り上げたい。
-                const directPath = fileElement.innerHTML
-                console.log(directPath)
-                fileElement.addEventListener('click', getLoadFileListener(directPath))
-            });
-
+            listenFiles()
+            listenDirectories()
         }
         const reListenFileTree = () => {
 
@@ -367,7 +363,7 @@ export default class Classzu {
 
         }
 
-        // listenFileTree()
+        listenFileTree()
         
         return this;
 

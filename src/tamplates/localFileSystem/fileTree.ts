@@ -76,7 +76,7 @@ const getFileTreeHTML = ({ id, directories, files }: {
 
     let html = `
         <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
-            <div data-directory-id="1" class="overflow-auto local-system-file-tree">
+            <div data-directory-id="1" class="directory overflow-auto local-system-file-tree">
     `
     html += getDirectoriesHTML(directories) 
     html += getFilesHTML(files) 
