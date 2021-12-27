@@ -7,14 +7,20 @@ const GUI = {
     storage: {
         local: {
             directory: {
-                create: getUniqueStr(),
-                update: getUniqueStr(),
-                delete: getUniqueStr(),
+                new: `new-${getUniqueStr()}`,
+                create: `create-${getUniqueStr()}`,
+                show: `show-${getUniqueStr()}`,
+                edit: `edit-${getUniqueStr()}`,
+                update: `update-${getUniqueStr()}`,
+                delete: `delete-${getUniqueStr()}`,
             },
             file: {
-                create: getUniqueStr(),
-                update: getUniqueStr(),
-                delete: getUniqueStr(),
+                new: `new-${getUniqueStr()}`,
+                create: `create-${getUniqueStr()}`,
+                show: `show-${getUniqueStr()}`,
+                edit: `edit-${getUniqueStr()}`,
+                update: `update-${getUniqueStr()}`,
+                delete: `delete-${getUniqueStr()}`,
             },
             clear: 'gui-storage-local-clear',
             fileTree: "file-tree"

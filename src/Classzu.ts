@@ -5,7 +5,7 @@ import Config from './config/index'
 import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, createElementFromHTML } from './utils/index'
 import ClasszuLoader from './ClasszuLoader'
 import LocalStorageFileSystem from './Storage/Local';
-import { Directory, File, FileNullable } from './Storage';
+import { Directory, DirectoryNullable, File, FileNullable } from './Storage';
 
 /**
  * HTML getters
@@ -98,23 +98,112 @@ export default class Classzu {
         const guiElement: HTMLElement = getClasszuElement(this.rootElementId, "gui")
 
         /**
-         * Create Buttons
+         * Create forms
          */
 
         const formHTML = getLocalFileSystemFormHTML()
         guiElement.append(formHTML)
 
-        /**
-         * Add Listeners to form items
-         */
         const { clear, file, directory } = Config.GUI.storage.local;
 
+        /**
+         * REST functions for Directory form listeners
+         */
+        class DirectoryREST {
+
+
+            constructor() { }
+            show(ID: number) {
+                const dir: Directory = new LocalStorageFileSystem().getDirectory(ID)
+
+                const showIdSelector = `.${directory.show} input[name="id"]`
+                const showNameSelector = `.${directory.show} input[name="name"]`
+                const editNameSelector = `.${directory.edit} input[name="name"]`
+                const showDirIdSelector = `.${directory.show} input[name="directoryId"]`
+
+                const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
+                const showName: HTMLInputElement | null = document.querySelector(showNameSelector)
+                const editName: HTMLInputElement | null = document.querySelector(editNameSelector)
+                const showDirId: HTMLInputElement | null = document.querySelector(showDirIdSelector)
+
+                if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
+                if (!showName) throw new Error(`Cannot find Element with selector: '${showNameSelector}'`)
+                if (!editName) throw new Error(`Cannot find Element with selector: '${editNameSelector}'`)
+                if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
+                
+                showId.value = String(dir.ID)
+                showName.value = dir.name
+                editName.value = dir.name
+                showDirId.value = String(dir.parentDirectoryId)
+                new LocalStorageFileSystem().showDirectories()
+            }
+            create() {
+                const newNameSelector = `.${directory.new} input[name="name"]`
+                const showIdSelector = `.${directory.show} input[name="id"]`
+
+                const newName: HTMLInputElement | null = document.querySelector(newNameSelector)
+                const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
+
+                if (!newName) throw new Error(`Cannot find Element with selector: '${newNameSelector}'`)
+                if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
+
+                const newDir: DirectoryNullable = new DirectoryNullable({
+                    name: newName.value,
+                    parentDirectoryId: parseInt(showId.value)
+                })
+
+                newName.value = ''
+
+                const dir = new LocalStorageFileSystem().createDirectory(newDir)
+                this.show(dir.ID)
+            }
+            update() {
+                const editNameSelector = `.${directory.edit} input[name="name"]`
+                const showIdSelector = `.${directory.show} input[name="id"]`
+                const showDirIdSelector = `.${directory.show} input[name="directoryId"]`
+
+                const editName: HTMLInputElement | null = document.querySelector(editNameSelector)
+                const showId: HTMLInputElement | null = document.querySelector(showIdSelector)
+                const showDirId: HTMLInputElement | null = document.querySelector(showDirIdSelector)
+
+                if (!editName) throw new Error(`Cannot find Element with selector: '${editNameSelector}'`)
+                if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
+                if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
+
+                const oldDir: Directory = new LocalStorageFileSystem().getDirectory(parseInt(showId.value))
+                const newDir: DirectoryNullable = new DirectoryNullable({
+                    name: editName.value,
+                    parentDirectoryId: parseInt(showDirId.value)
+                })
+
+                const dir = new LocalStorageFileSystem().updateDirectory(oldDir, newDir)
+                this.show(dir.ID)
+            }
+            delete() {
+                
+            }
+            static create() {
+                new DirectoryREST().create()
+            }
+            static update() {
+                new DirectoryREST().update()
+            }
+        }
+
+        new DirectoryREST().show(1)
+        document.querySelector(`.${clear}`)?.addEventListener('click', ()=>new LocalStorageFileSystem().drop())
+        document.querySelector(`.${directory.create}`)?.addEventListener('click', DirectoryREST.create)
+        document.querySelector(`.${directory.update}`)?.addEventListener('click', DirectoryREST.update)
+
+        /**
+         * REST functions for File form listeners
+         */
         const saveStage = (e: Event): void => {
 
             /**
              * need to refactor. not reusable
              */
-            const input = document.querySelector(`.${file.update} input`) as HTMLInputElement
+            const input = document.querySelector(`.${file.edit} input`) as HTMLInputElement
             const obj = {
                 name: input.value,
                 data: this.stage.toJSON()
@@ -140,7 +229,7 @@ export default class Classzu {
         }
         const addFile = (e: Event) => {
 
-            const input = document.querySelector(`.${file.create} input`) as HTMLInputElement
+            const input = document.querySelector(`.${file.new} input`) as HTMLInputElement
             const directoryId = 0 // FIXME:
 
             const newStage = this.stage.clone()
@@ -161,10 +250,12 @@ export default class Classzu {
 
         }
 
-        
-        document.querySelector(`.${clear}`)?.addEventListener('click', clearStorage.bind(this))
-        document.querySelector(`.${file.update} button`)?.addEventListener('click', saveStage.bind(this))
-        document.querySelector(`.${file.create} button`)?.addEventListener('click', addFile.bind(this))
+        /**
+         * Add Listeners to form items
+         */        
+        // document.querySelector(`.${clear}`)?.addEventListener('click', clearStorage.bind(this))
+        document.querySelector(`.${file.edit} button`)?.addEventListener('click', saveStage.bind(this))
+        document.querySelector(`.${file.new} button`)?.addEventListener('click', addFile.bind(this))
 
 
         /**

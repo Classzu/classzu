@@ -78,10 +78,22 @@ export default class LocalStorageFileSystem {
             return row
         })
         this.db.commit()
-        const data = this.db.query(File.name, function (row: localStorageDB_fields) { return row.ID == ID }).shift()
-        if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
-        
-        return new File(data as File)
+        return this.getFile(ID)
+    }
+    public updateDirectory(oldDirectory: Directory, newDirectory: DirectoryNullable): Directory {
+        //https://github.com/knadh/localStorageDB # update()
+        // >  returns the number of rows affected
+        // but it seems returnning nunmbe as booelan?
+        const ID = this.db.update(Directory.name, { ID: oldDirectory.ID }, function (row) {
+            for (const key in newDirectory) {
+                if (key !== "ID") {
+                    row[key] = newDirectory[key as keyof DirectoryNullable];
+                }
+            }
+            return row
+        })
+        this.db.commit()
+        return this.getDirectory(oldDirectory.ID)
     }
     public getFile(ID: number): File {
         const data = this.db.query(File.name, { ID: ID }).shift()
@@ -99,5 +111,20 @@ export default class LocalStorageFileSystem {
         const num = this.db.deleteRows(File.name, { ID: ID })
         this.db.commit()
         return num !== 0 // deleteRows returns 0 when rows not found.
+    }
+    public showFiles() {
+        const all = this.db.queryAll(File.name, {});
+        console.log(all)
+    }
+    public showDirectories() {
+        const all = this.db.queryAll(Directory.name, {});
+        console.log(all)
+    }
+
+    /**
+     * develop method
+     */
+    public drop() {
+        this.db.drop()
     }
 }

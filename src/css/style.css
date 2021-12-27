@@ -1,9 +1,11 @@
+input {
+    padding: 5px;
+    border: #333 solid 1px;
+}
 .btn {
-    position: relative;
-    top:0px;
-    color: #888888;
-    padding: 8px;
-    border: 1px solid green;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid green; 
 }
 
 .hello {

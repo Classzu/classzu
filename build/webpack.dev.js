@@ -6,6 +6,12 @@ module.exports = merge(common, {
 
     mode: "development",
     devtool: 'inline-source-map',
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, '../src/'),
+        },
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    },
     output: {
         path: path.resolve(__dirname, '../test-dist'),
         filename: '[name].js',
