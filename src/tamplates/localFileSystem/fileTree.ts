@@ -1,34 +1,100 @@
-import Config from "../../config"
-import { Directory } from "../../Storage";
-import { createElementFromHTML } from "../../utils"
+import Config from "@/config"
+import { Directory, File } from "@/Storage";
+import { createElementFromHTML } from "@/utils"
+import LocalStorageFileSystem from "@/Storage/Local";
 
-const getFileTreeHTML = ({ id, rootDir }: { id: string, rootDir: Directory}) => {
 
-    let ite = rootDir.files;
+/**
+ * 再帰を使って一発でファイルツリーを作ってしまうことが可能。LocalStorageを操作する権限を持ってしまう。
+ */
 
-    let fileTreeHTML = `
-        <div id="${id}" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
-    `
-    for (const key in ite) {
-        if (ite[key].type === "File") {
-            const file = ite[key]
-            fileTreeHTML += `
-                <div class="file ${file.name}">${file.name}</div>
-            `
-        }
+const getTreeHTMLFromDirectoryID = (dirID: number): string => {
+    const lsfs = new LocalStorageFileSystem()
+    const files: File[] = lsfs.getFilesBy("directoryId", dirID)
+    const dirs : Directory[] = lsfs.getDirectoriesBy("parendDirectoryId", dirID)
+
+    let html = ``
+    for (let i = 0; i < dirs.length; i++) {
+        const dir = dirs[i];
+        html += `
+            <details class="directory" data-directory-id="${dir.ID}">
+                <summary>${dir.name}</summary>
+        `
+        html += getTreeHTMLFromDirectoryID(dir.ID)
+        html += `
+            </details>
+        `
     }
-    fileTreeHTML +=`
+    html += getFilesHTML(files)
+
+    return html
+}
+/**
+ *  本来LocalStorageFileSystemを扱う権限を持たせたくないので後々このメソッドを拡張していく
+ */
+const getDirectoriesHTML = (directories: Directory[]): string => {
+    let html = ``
+    for (let i = 0; i < directories.length; i++) {
+        const dir = directories[i];
+        // html += `
+        //     <div class="file" data-directory-id="${dir.ID}">${dir.name}</div>
+        // `
+        html += `
+            <details class="directory" data-directory-id="${dir.ID}">
+                <summary>${dir.name}</summary>
+        `
+        html += getTreeHTMLFromDirectoryID(dir.ID)
+        html += `
+            </details>
+        `
+    }
+
+    return html
+}
+
+/**
+ * こっから下はそのまま使いたい。
+ */
+const getFilesHTML = (files: File[]): string => {
+    let html = ``
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        html += `
+            <div class="file" data-file-id="${file.ID}">${file.name}</div>
+        `
+    }
+
+    return html
+}
+
+const getFileTreeHTML = ({ id, directories, files }: {
+    id: string,
+    directories: Directory[],
+    files: File[]
+}): string => {
+
+
+    let html = `
+        <div id="${id}" data-directory-id="1" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+    `
+    html += getDirectoriesHTML(directories) 
+    html += getFilesHTML(files) 
+    html +=`
         </div>
     `
 
-    return fileTreeHTML;
+    return html;
 }
 
-const getLocalFileSystemTreeHTML = (rootDir: Directory) => {
+const getLocalFileSystemTreeHTML = ({ directories, files }: {
+    directories: Directory[],
+    files: File[]
+}) => {
     return createElementFromHTML(
         getFileTreeHTML({
             id: Config.GUI.storage.local.fileTree,
-            rootDir: rootDir
+            directories,
+            files
         })
     ) as Element
 }

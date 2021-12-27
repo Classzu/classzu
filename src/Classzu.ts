@@ -5,7 +5,7 @@ import Config from './config/index'
 import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, createElementFromHTML } from './utils/index'
 import ClasszuLoader from './ClasszuLoader'
 import LocalStorageFileSystem from './Storage/Local';
-import { Directory, File } from './Storage';
+import { Directory, File, FileNullable } from './Storage';
 
 /**
  * HTML getters
@@ -119,11 +119,11 @@ export default class Classzu {
             }
 
             if (input.name !== this.currentFilePath) {
-                new LocalStorageFileSystem().delete('', this.currentFilePath as string)
-                new LocalStorageFileSystem().createFile('', obj)
+                // new LocalStorageFileSystem().delete('', this.currentFilePath as string)
+                // new LocalStorageFileSystem().createFile('', obj)
             }
 
-            new LocalStorageFileSystem().updateFile('', obj)
+            // new LocalStorageFileSystem().updateFile('', obj)
             reRenderFileTree()
             reListenFileTree()
             return e.preventDefault();
@@ -139,14 +139,17 @@ export default class Classzu {
         const addFile = (e: Event) => {
 
             const input = document.querySelector('.add-file input') as HTMLInputElement
+            const directoryId = 0 // FIXME:
+
             const newStage = this.stage.clone()
             newStage.getLayers()[0].destroyChildren()
 
-            const obj = {
+            const newFile = new FileNullable({
                 name: input.value,
-                data: newStage.toJSON()
-            }
-            new LocalStorageFileSystem().createFile('', obj)
+                data: newStage.toJSON(),
+                directoryId: directoryId
+            })
+            new LocalStorageFileSystem().createFile(newFile)
 
             reRenderFileTree()
             reListenFileTree()
@@ -165,9 +168,14 @@ export default class Classzu {
          * Create FileTree
          */
         const renderFileTree = () => {
-            
-            const rootDir = new LocalStorageFileSystem().get()
-            const fileTreeHTML = getLocalFileSystemTreeHTML(rootDir)
+            const lsfs = new LocalStorageFileSystem()
+            const rootFiles = lsfs.getFilesBy("directoryId")
+            const rootDirs = lsfs.getDirectoriesBy("parentDirectoryId")
+
+            const fileTreeHTML = getLocalFileSystemTreeHTML({
+                directories: rootDirs,
+                files: rootFiles
+            })
             guiElement.append(fileTreeHTML)
 
         }
@@ -178,7 +186,7 @@ export default class Classzu {
 
         }
 
-        renderFileTree()
+        // renderFileTree()
 
         /**
          * Add Listeners to Files
@@ -191,14 +199,14 @@ export default class Classzu {
         }
         const loadStage = (directPath: string): void => {
 
-            const file: File | null = new LocalStorageFileSystem().getFile(directPath)
-            if ( file === null || file.data === null ) {
-                new Error('LocalStorage is Empty')
-                return;
-            }
-            setFileNameToUpdateInput(file.name)
-            this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
-            this.currentFilePath = file.name
+            // const file: File | null = new LocalStorageFileSystem().getFile(directPath)
+            // if ( file === null || file.data === null ) {
+            //     new Error('LocalStorage is Empty')
+            //     return;
+            // }
+            // setFileNameToUpdateInput(file.name)
+            // this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
+            // this.currentFilePath = file.name
 
         }
         const getLoadFileListener = (directPath: string) => {
@@ -226,7 +234,7 @@ export default class Classzu {
 
         }
 
-        listenFileTree()
+        // listenFileTree()
         
         return this;
 
