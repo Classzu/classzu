@@ -315,7 +315,7 @@ export default class Classzu {
 
         }
 
-        // renderFileTree()
+        renderFileTree()
 
         /**
          * Add Listeners to Files

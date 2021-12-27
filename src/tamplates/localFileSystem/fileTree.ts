@@ -17,7 +17,7 @@ const getTreeHTMLFromDirectoryID = (dirID: number): string => {
     for (let i = 0; i < dirs.length; i++) {
         const dir = dirs[i];
         html += `
-            <details class="directory" data-directory-id="${dir.ID}">
+            <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
                 <summary>${dir.name}</summary>
         `
         html += getTreeHTMLFromDirectoryID(dir.ID)
@@ -40,7 +40,7 @@ const getDirectoriesHTML = (directories: Directory[]): string => {
         //     <div class="file" data-directory-id="${dir.ID}">${dir.name}</div>
         // `
         html += `
-            <details class="directory" data-directory-id="${dir.ID}">
+            <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
                 <summary>${dir.name}</summary>
         `
         html += getTreeHTMLFromDirectoryID(dir.ID)
@@ -60,7 +60,7 @@ const getFilesHTML = (files: File[]): string => {
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         html += `
-            <div class="file" data-file-id="${file.ID}">${file.name}</div>
+            <div class="file bg-white p-2 m-2 rounded" data-file-id="${file.ID}">${file.name}</div>
         `
     }
 
@@ -75,11 +75,13 @@ const getFileTreeHTML = ({ id, directories, files }: {
 
 
     let html = `
-        <div id="${id}" data-directory-id="1" style="cursor: default;" class="bg-dark p-2 m-2" pointer-events="all">
+        <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
+            <div data-directory-id="1" class="overflow-auto local-system-file-tree">
     `
     html += getDirectoriesHTML(directories) 
     html += getFilesHTML(files) 
     html +=`
+            </div>
         </div>
     `
 
