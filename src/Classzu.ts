@@ -107,12 +107,14 @@ export default class Classzu {
         /**
          * Add Listeners to form items
          */
+        const { clear, file, directory } = Config.GUI.storage.local;
+
         const saveStage = (e: Event): void => {
 
             /**
              * need to refactor. not reusable
              */
-            const input = document.querySelector('.update-file input') as HTMLInputElement
+            const input = document.querySelector(`.${file.update} input`) as HTMLInputElement
             const obj = {
                 name: input.value,
                 data: this.stage.toJSON()
@@ -138,7 +140,7 @@ export default class Classzu {
         }
         const addFile = (e: Event) => {
 
-            const input = document.querySelector('.add-file input') as HTMLInputElement
+            const input = document.querySelector(`.${file.create} input`) as HTMLInputElement
             const directoryId = 0 // FIXME:
 
             const newStage = this.stage.clone()
@@ -159,9 +161,10 @@ export default class Classzu {
 
         }
 
-        document.querySelector(`.${Config.GUI.storage.local.clear}`)?.addEventListener('click', clearStorage.bind(this))
-        document.querySelector(`.update-file button`)?.addEventListener('click', saveStage.bind(this))
-        document.querySelector(`.add-file button`)?.addEventListener('click', addFile.bind(this))
+        
+        document.querySelector(`.${clear}`)?.addEventListener('click', clearStorage.bind(this))
+        document.querySelector(`.${file.update} button`)?.addEventListener('click', saveStage.bind(this))
+        document.querySelector(`.${file.create} button`)?.addEventListener('click', addFile.bind(this))
 
 
         /**

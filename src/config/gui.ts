@@ -1,3 +1,4 @@
+import { getUniqueStr } from "@/utils"
 
 const GUI = {
     class: {
@@ -5,8 +6,16 @@ const GUI = {
     },
     storage: {
         local: {
-            save: 'gui-storage-local-save',
-            load: 'gui-storage-local-local',
+            directory: {
+                create: getUniqueStr(),
+                update: getUniqueStr(),
+                delete: getUniqueStr(),
+            },
+            file: {
+                create: getUniqueStr(),
+                update: getUniqueStr(),
+                delete: getUniqueStr(),
+            },
             clear: 'gui-storage-local-clear',
             fileTree: "file-tree"
         },
