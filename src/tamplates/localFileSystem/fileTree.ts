@@ -3,7 +3,12 @@ import { Directory, File } from "@/Storage";
 import { createElementFromHTML } from "@/utils"
 import LocalStorageFileSystem from "@/Storage/Local";
 
-
+const selector = Config.GUI.storage.local
+const getDeleteIcon = (selector: string) => {
+    return `
+        <i class="${selector} fa fa-trash-o align-self-center"></i>
+    `
+}
 /**
  * 再帰を使って一発でファイルツリーを作ってしまうことが可能。LocalStorageを操作する権限を持ってしまう。
  */
@@ -18,10 +23,8 @@ const getTreeHTMLFromDirectoryID = (dirID: number): string => {
         const dir = dirs[i];
         html += `
             <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
-                <summary>${dir.name}</summary>
-        `
-        html += getTreeHTMLFromDirectoryID(dir.ID)
-        html += `
+                <summary class="justify-content-end">${dir.name} ${getDeleteIcon(selector.directory.delete)}</summary>
+                ${getTreeHTMLFromDirectoryID(dir.ID)}
             </details>
         `
     }
@@ -41,10 +44,8 @@ const getDirectoriesHTML = (directories: Directory[]): string => {
         // `
         html += `
             <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
-                <summary>${dir.name}</summary>
-        `
-        html += getTreeHTMLFromDirectoryID(dir.ID)
-        html += `
+                <summary><div class="d-flex justify-content-between ">${dir.name} ${getDeleteIcon(selector.directory.delete)}</div></summary>
+                ${getTreeHTMLFromDirectoryID(dir.ID)}
             </details>
         `
     }
@@ -60,7 +61,10 @@ const getFilesHTML = (files: File[]): string => {
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         html += `
-            <div class="file bg-white p-2 m-2 rounded" data-file-id="${file.ID}">${file.name}</div>
+            <div class="file bg-white p-2 m-2 rounded d-flex justify-content-between" data-file-id="${file.ID}">
+                ${file.name} 
+                ${getDeleteIcon(selector.file.delete)}
+            </div>
         `
     }
 
@@ -77,10 +81,8 @@ const getFileTreeHTML = ({ id, directories, files }: {
     let html = `
         <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
             <div data-directory-id="1" class="directory overflow-auto local-system-file-tree">
-    `
-    html += getDirectoriesHTML(directories) 
-    html += getFilesHTML(files) 
-    html +=`
+            ${getDirectoriesHTML(directories) }
+            ${getFilesHTML(files) }
             </div>
         </div>
     `
@@ -94,7 +96,7 @@ const getLocalFileSystemTreeHTML = ({ directories, files }: {
 }) => {
     return createElementFromHTML(
         getFileTreeHTML({
-            id: Config.GUI.storage.local.fileTree,
+            id: selector.fileTree,
             directories,
             files
         })

@@ -136,7 +136,7 @@ export default class Classzu {
                 showName.value = dir.name
                 editName.value = dir.name
                 showDirId.value = String(dir.parentDirectoryId)
-                new LocalStorageFileSystem().showDirectories()
+                console.log(dir)
             }
             create() {
                 const newNameSelector = `.${selector.directory.new} input[name="name"]`
@@ -203,7 +203,6 @@ export default class Classzu {
         /**
          * REST functions for File form listeners
          */
-
         class FileREST{
             constructor() { }
             
@@ -230,8 +229,8 @@ export default class Classzu {
                 showName.value = file.name
                 editName.value = file.name
                 showDirId.value = String(file.directoryId)
+                console.log(file)
                 new DirectoryREST().show(file.directoryId)
-                new LocalStorageFileSystem().showFiles()
             }
             create(stage: Konva.Stage) {
                 const newNameSelector = `.${selector.file.new} input[name="name"]`
@@ -280,8 +279,8 @@ export default class Classzu {
                 const file = new LocalStorageFileSystem().updateFile(oldFile, newFile)
                 this.show(file)
             }
-            delete() {
-                
+            delete(file: File) {
+                new LocalStorageFileSystem().deleteFile(file.ID)
             }
 
             static create(stage: Konva.Stage) {
@@ -291,6 +290,11 @@ export default class Classzu {
             }
             static update(stage: Konva.Stage) {
                 new FileREST().update(stage)
+                reRenderFileTree()
+                reListenFileTree()
+            }
+            static delete(file: File) {
+                new FileREST().delete(file)
                 reRenderFileTree()
                 reListenFileTree()
             }
@@ -342,7 +346,23 @@ export default class Classzu {
             fileElements.forEach(fileElement => {
                 const id = parseInt(fileElement.getAttribute("data-file-id")!)
                 const file = new LocalStorageFileSystem().getFile(id)
-                fileElement.addEventListener('click', () => showFile(file))
+                /**
+                 * add show event
+                 */
+                fileElement.addEventListener('click', (e: Event) => {
+                    showFile(file)
+                    e.stopPropagation();
+                    e.preventDefault()
+                })
+                /**
+                 * add delete event
+                 */
+                const trashIcon: HTMLElement = fileElement.querySelector(`.${selector.file.delete}`)!
+                trashIcon.addEventListener('click', (e:Event) =>{
+                    FileREST.delete(file)
+                    e.stopPropagation();
+                    e.preventDefault()
+                })
             });            
         }
         const listenDirectories = () => {
@@ -350,7 +370,12 @@ export default class Classzu {
             dirElements.forEach(dirElement => {
                 const id = parseInt(dirElement.getAttribute("data-directory-id")!)
                 const dir = new LocalStorageFileSystem().getDirectory(id)
-                dirElement.addEventListener('click', () => new DirectoryREST().show(dir))
+                dirElement.addEventListener('click', (e:Event) => {
+                    new DirectoryREST().show(dir)
+                    e.stopPropagation();
+                    //details タグを使っているため
+                    // e.preventDefault()
+                })
             });  
         }
         const listenFileTree = () => {
