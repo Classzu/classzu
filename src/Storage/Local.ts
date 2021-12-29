@@ -33,10 +33,15 @@ export default class LocalStorageFileSystem {
         } 
 
         const rootDir = db.queryAll(Directory.name, {}).shift()
-        if(!rootDir) throw new Error('Can not find root Directry')
-        if(rootDir.ID !== 1) throw new Error(`Unexpected RootDirectory found ID: ${rootDir.ID}.`) //expect 1. always. throw Error for feature debug
+        if (!rootDir) throw new Error('Can not find root Directry')
+        if(rootDir.ID !== 1) new Error(`Unexpected RootDirectory found ID: ${rootDir.ID}.`) //expect 1. always. throw Error for feature debug
         this.rootDirectoryId = rootDir.ID
         this.db = db
+    }
+    public getFiles() {
+        const lsFields: localStorageDB_fields[] =  this.db.queryAll(File.name, {})
+        const files: File[] = lsFields.map(field => new File(field as File))
+        return files;
     }
     public getDirectoriesBy(key:string, value?:any): Directory[] {
         if (!value) value = this.rootDirectoryId
@@ -115,6 +120,22 @@ export default class LocalStorageFileSystem {
         this.db.commit()
         return num !== 0 // deleteRows returns 0 when rows not found.
     }
+    public deleteDirectory(ID: number): boolean {
+        //ORM的にはdependentがtrueかどうかを確認して関連しているファイルを削除するかを決定するべきだけど、
+        // このモジュールはORMというよりかは、LocalStorageFileSystemということで、ディレクトリーをの関係を管理するちょっと抽象的な存在なので
+        // 今回は、ここでファイルたちも削除することにする。
+        const files: File[] = this.getFilesBy("directoryId", ID)
+        files.forEach(file => {
+            this.deleteFile(file.ID)
+        })
+
+        // IDでファイルが削除できない場合、Errorをthrowしないのはフロント側でエラーが起きたことをどう処理するかを任せることができるため、代わりにbooleanを返す。
+        // また、他のメソッドも後々そうするべきかも。
+        const num = this.db.deleteRows(Directory.name, { ID: ID })
+        if (num === 0) new Error(`Failed to delete Directory by ID: ${ID}`)
+        this.db.commit() 
+        return num !== 0 // deleteRows returns 0 when rows not found.
+    }
     public showFiles() {
         const all = this.db.queryAll(File.name, {});
         console.log(all)
@@ -129,5 +150,6 @@ export default class LocalStorageFileSystem {
      */
     public drop() {
         this.db.drop()
+        console.log('dropped!')
     }
 }

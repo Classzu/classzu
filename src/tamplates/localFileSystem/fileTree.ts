@@ -77,10 +77,12 @@ const getFileTreeHTML = ({ id, directories, files }: {
     files: File[]
 }): string => {
 
-
+    //RootDirectoryにはdata-directory-idをつけない
+    //RootDirectoryはイメージ的には特別なディレクトリで他のモデルにしたい。
+    //けど今はしない理由はDirectoryモデルにコメント済み。
     let html = `
         <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
-            <div data-directory-id="1" class="directory overflow-auto local-system-file-tree">
+            <div  class="directory overflow-auto local-system-file-tree">
             ${getDirectoriesHTML(directories) }
             ${getFilesHTML(files) }
             </div>

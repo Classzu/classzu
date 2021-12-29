@@ -1,3 +1,10 @@
+/**
+ * RootDirectoryは他とは違う、ワークスペースにたいなモデルにしたい。けどそれだといくつか問題がある。
+ * 
+ * 1. Directoryに workspace_idを持たせる。
+ *      これはparentDirectoryIdと同様にnullを許容してしまうことが問題。
+ * 2. */
+ 
 export default class Directory {
     public ID: number
     public name: string

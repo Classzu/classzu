@@ -21,8 +21,6 @@ export default class Classzu {
 
     public Node: any = Node
 
-    public currentFilePath: string | null = null
-
     constructor(id?: string) {
 
         /**
@@ -180,9 +178,14 @@ export default class Classzu {
                 const dir = new LocalStorageFileSystem().updateDirectory(oldDir, newDir)
                 this.show(dir)
             }
-            delete() {
-                
+            delete(directory: Directory) {
+                // 関連しているファイルたちはLocalStorageFileSystem側で削除している理由はメソッド内にコメント済み
+                new LocalStorageFileSystem().deleteDirectory(directory.ID)
             }
+            /**
+             * このstaticメソッドたちはインスタンスメソッドがrefactorされた後に必要かどうか判断する。
+             * RESTというかCLUDの処理をなぜあえてstaticで書き直したかというと匿名関数にしちゃうと単純に可読性が低かったから。
+             */
             static create() {
                 new DirectoryREST().create()
                 reRenderFileTree()
@@ -193,7 +196,41 @@ export default class Classzu {
                 reRenderFileTree()
                 reListenFileTree()
             }
+            static delete(dir: Directory) {
+                new DirectoryREST().delete(dir)
+
+                /**
+                 * 本当は親フォルダを表示させたい。
+                 * けど親フォルダのshowが出来上がってないので、今は、
+                 * ファイル内の最初のファイル
+                 * でいこう。。。
+                 */
+
+                // new DirectoryREST().show(dirId)
+                //↓
+
+                let files: File[] = new LocalStorageFileSystem().getFiles()
+                if (files.length !== 0) {
+                    const redirectFile: File = files.shift()!
+                    new FileREST().show(redirectFile)
+                } else {
+
+                    const newFile: FileNullable = new FileNullable({
+                        name: "Untitled",
+                        directoryId: dir.ID,
+                    })
+                    const redirectFile: File = new LocalStorageFileSystem().createFile(newFile)
+                    new FileREST().show(redirectFile)
+                }
+
+
+
+                reRenderFileTree()
+                reListenFileTree()
+            }
         }
+
+        
 
         new DirectoryREST().show(1)
         document.querySelector(`.${selector.clear}`)?.addEventListener('click', () => new LocalStorageFileSystem().drop())
@@ -203,8 +240,18 @@ export default class Classzu {
         /**
          * REST functions for File form listeners
          */
-        class FileREST{
-            constructor() { }
+        const loadFile = (file: File) => {
+            
+            this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
+            console.log(this.stage)
+        }
+        const getStage = (): Konva.Stage => {
+            return this.stage
+        }
+        const superThis = this
+        class FileREST {
+            public superThis: Classzu = superThis
+            constructor() {}
             
             show(a: number | File) {
                 
@@ -229,6 +276,9 @@ export default class Classzu {
                 showName.value = file.name
                 editName.value = file.name
                 showDirId.value = String(file.directoryId)
+                // loadFile(file)
+                this.superThis.stage = new ClasszuLoader(file.data, this.superThis.rootElementId).create();
+                console.log(this.superThis)
                 console.log(file)
                 new DirectoryREST().show(file.directoryId)
             }
@@ -241,8 +291,10 @@ export default class Classzu {
 
                 if (!newName) throw new Error(`Cannot find Element with selector: '${newNameSelector}'`)
                 if (!dirShowId) throw new Error(`Cannot find Element with selector: '${dirShowIdSelector}'`)
-
-                const newStage = stage.clone()
+                console.log(this.superThis)
+                const stagew: Konva.Stage = this.superThis.stage
+                const newStage = stagew.clone()
+                
                 newStage.getLayers()[0].destroyChildren()
                 
                 const newFile: FileNullable = new FileNullable({
@@ -272,7 +324,7 @@ export default class Classzu {
                 const oldFile: File = new LocalStorageFileSystem().getFile(parseInt(showId.value))
                 const newFile: FileNullable = new FileNullable({
                     name: editName.value,
-                    data: stage.toJSON(),
+                    data: this.superThis.stage.toJSON(),
                     directoryId: parseInt(showDirId.value)
                 })
 
@@ -294,7 +346,32 @@ export default class Classzu {
                 reListenFileTree()
             }
             static delete(file: File) {
-                new FileREST().delete(file)
+                const dirId = file.directoryId
+                const fileRest = new FileREST()
+                fileRest.delete(file)
+                
+                /**
+                 * delete後は親ディレクトリを表示
+                 * だけど、今はまだフォームに値を入れてるだけなのでちょっと無理、
+                 * とりあえず、空白のファイルを作成する
+                 */
+
+                // new DirectoryREST().show(dirId)
+                //↓
+                let files: File[] = new LocalStorageFileSystem().getFilesBy("directoryId", dirId)
+                if (files.length !== 0) {
+                    const redirectFile: File = files.shift()!
+                    fileRest.show(redirectFile)
+                } else {
+
+                    const newFile: FileNullable = new FileNullable({
+                        name: "Untitled",
+                        directoryId: dirId,
+                    })
+                    const redirectFile: File = new LocalStorageFileSystem().createFile(newFile)
+                    new FileREST().show(redirectFile)
+                }
+
                 reRenderFileTree()
                 reListenFileTree()
             }
@@ -335,12 +412,6 @@ export default class Classzu {
         /**
          * Add Listeners to Files
          */
-        const showFile = (file: File): void => {
-
-            new FileREST().show(file)
-            this.stage = new ClasszuLoader(file.data, this.rootElementId).create();
-
-        }
         const listenFiles = () => {
             const fileElements = getClasszuElement(this.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-file-id]`);
             fileElements.forEach(fileElement => {
@@ -350,7 +421,7 @@ export default class Classzu {
                  * add show event
                  */
                 fileElement.addEventListener('click', (e: Event) => {
-                    showFile(file)
+                    new FileREST().show(file)
                     e.stopPropagation();
                     e.preventDefault()
                 })
@@ -370,11 +441,23 @@ export default class Classzu {
             dirElements.forEach(dirElement => {
                 const id = parseInt(dirElement.getAttribute("data-directory-id")!)
                 const dir = new LocalStorageFileSystem().getDirectory(id)
+                /**
+                 * add show event
+                 */
                 dirElement.addEventListener('click', (e:Event) => {
                     new DirectoryREST().show(dir)
                     e.stopPropagation();
-                    //details タグを使っているため
+                    //details タグを使っているためコメントアウト
                     // e.preventDefault()
+                })
+                /**
+                 * add delete event
+                 */
+                const trashIcon: HTMLElement = dirElement.querySelector(`i`)!
+                trashIcon.addEventListener('click', (e: Event) => {
+                    DirectoryREST.delete(dir)
+                    e.stopPropagation();
+                    e.preventDefault()
                 })
             });  
         }
