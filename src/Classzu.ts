@@ -101,6 +101,49 @@ export default class Classzu {
     public useLocalFileSystem() {
 
         new LocalStorageFileSystem(this).GUI.set()
+        // form create file
+        // - error確認
+        // - ファイルが作成される
+        // - renderが更新される
+        // - currentファイルの情報があっているか
+
+        // form update file
+        // - error確認
+        // - ファイルがアップデートされる(create Class, change name)
+        // - renderが更新される
+        // - currentファイルの情報があっているか
+        // - 他のファイルと切り替えてみる
+
+        // delete file
+        // - error確認
+        // - ファイルが削除される(create Class, change name)
+        // - renderが更新される
+        // - currentファイルの遷移先があっているか
+        // - 最後の一つのファイルを削除してUnTitledファイルが作成されるか
+        // - 最後のファイル削除後に新しいファイルを作成できるか *
+
+
+        
+        // form create Directory
+        // - error確認
+        // - ディレクトリが作成される
+        // - renderが更新される
+        // - currentディレクトリの情報があっているか
+
+        // form update Directory
+        // - error確認
+        // - ディレクトリがアップデートされる(create Class, change name)
+        // - renderが更新される
+        // - currentディレクトリの情報があっているか
+        // - 他のディレクトリと切り替えてみる
+
+        // delete Directory
+        // - error確認
+        // - ディレクトリが削除される
+        // - renderが更新される
+        // - currentディレクトリの遷移先があっているか
+        // - 最後の一つのディレクトリを削除してUnTitledファイルが作成されるか
+        // - 最後のディレクトリ削除後に新しいファイル or ディレクトリを作成できるか *
 
     }
 }
