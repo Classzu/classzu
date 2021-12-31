@@ -42,7 +42,7 @@ class FileTreeHTML {
     treeHTMLFromDirectoryID = (dirID: number): string => {
 
         const files: File[] = new this.orm.File().getFilesBy("directoryId", dirID)
-        const dirs : Directory[] = new this.orm.Directory().getDirectoriesBy("parendDirectoryId", dirID)
+        const dirs : Directory[] = new this.orm.Directory().getDirectoriesBy("parentDirectoryId", dirID)
     
         let html = ``
         for (let i = 0; i < dirs.length; i++) {

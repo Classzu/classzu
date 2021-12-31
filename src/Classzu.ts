@@ -102,9 +102,6 @@ export default class Classzu {
 
         new LocalStorageFileSystem(this).GUI.set()
         
-        // form create Directory
-        // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
-        //   => failed
 
 
         // delete Directory
