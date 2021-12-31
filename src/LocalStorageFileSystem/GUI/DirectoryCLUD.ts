@@ -111,9 +111,12 @@ class DirectoryCLUD {
 
         } else {
 
+            const newStage: Konva.Stage = this.superThis.superThis.classzu.stage.clone()
+            newStage.getLayers()[0].destroyChildren()
             const newFile: FileNullable = new FileNullable({
                 name: "Untitled",
                 directoryId: directory.ID,
+                data: newStage.toJSON(),
             })
             const redirectFile: File = new this.superThis.superThis.ORM.File().createFile(newFile)
             this.superThis.File.show(redirectFile)

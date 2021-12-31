@@ -101,14 +101,6 @@ export default class Classzu {
     public useLocalFileSystem() {
 
         new LocalStorageFileSystem(this).GUI.set()
-        // form create file passed!
-
-        // form update file passed!
-
-        // delete file
-        // - 最後のファイル削除後に新しいファイルを作成できるか *
-        //   => filed
-        //   => error delete時に作成するファイルにデータを指定していないから。だと思う
         
         // form create Directory
         // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか

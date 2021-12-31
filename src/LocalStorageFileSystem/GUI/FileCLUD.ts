@@ -2,6 +2,7 @@ import GUI from "./GUI";
 import File, { FileNullable } from '../models/File'
 import Config from '@/config'
 import ClasszuLoader from "@/ClasszuLoader";
+import Konva from "konva";
 
 const selector = Config.GUI.storage.local
 
@@ -39,7 +40,6 @@ class FileCLUD {
         showDirId.value = String(file.directoryId)
         // loadFile(file)
         this.superThis.superThis.classzu.stage = new ClasszuLoader(file.data, this.superThis.superThis.classzu.rootElementId).create();
-        console.log(this.superThis)
         console.log(file)
         this.superThis.Directory.show(file.directoryId)
 
@@ -58,7 +58,6 @@ class FileCLUD {
 
         if (!newName) throw new Error(`Cannot find Element with selector: '${newNameSelector}'`)
         if (!dirShowId) throw new Error(`Cannot find Element with selector: '${dirShowIdSelector}'`)
-        console.log(this.superThis)
 
         const newStage = this.superThis.superThis.classzu.stage.clone()
         newStage.getLayers()[0].destroyChildren()
@@ -119,9 +118,11 @@ class FileCLUD {
             const redirectFile: File = files.shift()!
             this.show(redirectFile)
         } else {
-
+            const newStage: Konva.Stage = this.superThis.superThis.classzu.stage.clone()
+            newStage.getLayers()[0].destroyChildren()
             const newFile: FileNullable = new FileNullable({
                 name: "Untitled",
+                data: newStage.toJSON(),
                 directoryId: dirId,
             })
             const redirectFile: File = new this.superThis.superThis.ORM.File().createFile(newFile)
