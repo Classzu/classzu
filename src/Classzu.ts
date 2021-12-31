@@ -101,49 +101,41 @@ export default class Classzu {
     public useLocalFileSystem() {
 
         new LocalStorageFileSystem(this).GUI.set()
-        // form create file
-        // - error確認
-        // - ファイルが作成される
-        // - renderが更新される
-        // - currentファイルの情報があっているか
+        // form create file passed!
 
-        // form update file
-        // - error確認
-        // - ファイルがアップデートされる(create Class, change name)
-        // - renderが更新される
-        // - currentファイルの情報があっているか
-        // - 他のファイルと切り替えてみる
+        // form update file passed!
 
         // delete file
-        // - error確認
-        // - ファイルが削除される(create Class, change name)
-        // - renderが更新される
-        // - currentファイルの遷移先があっているか
-        // - 最後の一つのファイルを削除してUnTitledファイルが作成されるか
         // - 最後のファイル削除後に新しいファイルを作成できるか *
-
-
+        //   => filed
+        //   => error delete時に作成するファイルにデータを指定していないから。だと思う
         
         // form create Directory
-        // - error確認
-        // - ディレクトリが作成される
-        // - renderが更新される
-        // - currentディレクトリの情報があっているか
+        // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
+        //   => failed
 
         // form update Directory
-        // - error確認
-        // - ディレクトリがアップデートされる(create Class, change name)
         // - renderが更新される
-        // - currentディレクトリの情報があっているか
-        // - 他のディレクトリと切り替えてみる
+        //   => filed
+        //   => show メソッド内にrender とlistenがない
+        // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
+        //   => failed
+        //   => ディレクトリを開けない。
+        //   => eventListenrを確認
+        //   => directory.showを外すとうまくいく。原因は Directory.showでrender & listenし直しているからだと思う。
 
         // delete Directory
-        // - error確認
         // - ディレクトリが削除される
-        // - renderが更新される
+        //  => failed error: Uncaught Error: Data not found. Find by ID: 2
+        //  => directory削除したのに、 そのディレクトリー使ってfaile作成していたから。
+        //  => DirectoryORM.delete内でファイルの削除をおこなっているが、ディレクトリは行っていない。
+        //  => console確認したら数が揃っていない。ORM側で違うORM呼び出しているのが原因ぽい。
+
         // - currentディレクトリの遷移先があっているか
-        // - 最後の一つのディレクトリを削除してUnTitledファイルが作成されるか
+        //  => テストできず
         // - 最後のディレクトリ削除後に新しいファイル or ディレクトリを作成できるか *
+        //  => failed
+        //  => おそらくファイルと同じ理由
 
     }
 }
