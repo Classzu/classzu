@@ -117,6 +117,7 @@ class DirectoryCLUD {
                 name: "Untitled",
                 directoryId: directory.ID,
                 data: newStage.toJSON(),
+                directoryId: 1,
             })
             const redirectFile: File = new this.superThis.superThis.ORM.File().createFile(newFile)
             this.superThis.File.show(redirectFile)
