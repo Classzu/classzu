@@ -115,7 +115,6 @@ class DirectoryCLUD {
             newStage.getLayers()[0].destroyChildren()
             const newFile: FileNullable = new FileNullable({
                 name: "Untitled",
-                directoryId: directory.ID,
                 data: newStage.toJSON(),
                 directoryId: 1,
             })
