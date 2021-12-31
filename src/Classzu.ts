@@ -102,6 +102,9 @@ export default class Classzu {
 
         new LocalStorageFileSystem(this).GUI.set()
         
+        // delete directory
+        // - ディレクトリ削除した際にその中にあったディレクトリを再起的に全て削除しているか。
+        
 
     }
 }
