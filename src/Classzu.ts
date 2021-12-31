@@ -103,14 +103,6 @@ export default class Classzu {
         new LocalStorageFileSystem(this).GUI.set()
         
 
-
-        // delete Directory
-        // - ディレクトリが削除される
-        //  => failed error: Uncaught Error: Data not found. Find by ID: 2
-        //  => directory削除したのに、 そのディレクトリー使ってfaile作成していたから。
-        //  => DirectoryORM.delete内でファイルの削除をおこなっているが、ディレクトリは行っていない。
-        //  => console確認したら数が揃っていない。ORM側で違うORM呼び出しているのが原因ぽい。
-
         // - currentディレクトリの遷移先があっているか
         //  => テストできず
 

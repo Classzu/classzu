@@ -61,9 +61,15 @@ class DirectoryORM extends ORM {
         // 今回は、ここでファイルたちも削除することにする。
         const fileOrm = new FileORM()
         const files: File[] = fileOrm.getFilesBy("directoryId", ID)
+        //↓
+        // 論理エラー、何処かで値渡しが起きているのかなぜかGUI側で呼び出した時に
+        //GUI側で確認するdbとORM側で確認するdbに違いがある。ひとまず。直接削除することに、
+        const files: File[] = new FileORM().getFilesBy("directoryId", ID)
         files.forEach(file => {
-            fileOrm.deleteFile(file.ID)
+            const num = this.db.deleteRows(File.name, { ID: file.ID })
+            // new FileORM().deleteFile(file.ID)
         })
+        this.db.commit()
 
         // IDでファイルが削除できない場合、Errorをthrowしないのはフロント側でエラーが起きたことをどう処理するかを任せることができるため、代わりにbooleanを返す。
         // また、他のメソッドも後々そうするべきかも。
