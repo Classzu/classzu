@@ -39,6 +39,9 @@ class DirectoryCLUD {
         showDirId.value = String(dir.parentDirectoryId)
         console.log(dir)
 
+
+        this.superThis.reRenderFileTree()
+        this.superThis.reListenFileTree()
     }
     create() {
 
@@ -60,9 +63,6 @@ class DirectoryCLUD {
 
         const dir = new this.superThis.superThis.ORM.Directory().createDirectory(newDir)
         this.show(dir)
-
-        this.superThis.reRenderFileTree()
-        this.superThis.reListenFileTree()
 
     }
     update() {

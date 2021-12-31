@@ -107,9 +107,6 @@ export default class Classzu {
         //   => failed
 
         // form update Directory
-        // - renderが更新される
-        //   => filed
-        //   => show メソッド内にrender とlistenがない
         // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
         //   => failed
         //   => ディレクトリを開けない。
