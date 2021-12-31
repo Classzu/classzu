@@ -106,12 +106,6 @@ export default class Classzu {
         // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
         //   => failed
 
-        // form update Directory
-        // - ネストしたファイルやディレクトリのレンダリングがうまくいっているか
-        //   => failed
-        //   => ディレクトリを開けない。
-        //   => eventListenrを確認
-        //   => directory.showを外すとうまくいく。原因は Directory.showでrender & listenし直しているからだと思う。
 
         // delete Directory
         // - ディレクトリが削除される

@@ -45,12 +45,32 @@ class GUI {
     }
     listenForm() {
 
-        document.querySelector(`.${selector.clear}`)?.addEventListener('click', () => new this.superThis.ORM.DB().drop())
-        document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', () => this.Directory.create())
-        document.querySelector(`.${selector.directory.update}`)?.addEventListener('click', () => this.Directory.update())
+        document.querySelector(`.${selector.clear}`)?.addEventListener('click', () =>{
+            new this.superThis.ORM.DB().drop()
+            this.reRenderFileTree()
+            this.reListenFileTree()
+        })
+        document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', () =>{
+            this.Directory.create()
+            this.reRenderFileTree()
+            this.reListenFileTree()
+        })
+        document.querySelector(`.${selector.directory.update}`)?.addEventListener('click', () =>{
+            this.Directory.update()
+            this.reRenderFileTree()
+            this.reListenFileTree()
+        })
 
-        document.querySelector(`.${selector.file.create}`)?.addEventListener('click', () => this.File.create())
-        document.querySelector(`.${selector.file.update}`)?.addEventListener('click', () => this.File.update())
+        document.querySelector(`.${selector.file.create}`)?.addEventListener('click', () =>{
+            this.File.create()
+            this.reRenderFileTree()
+            this.reListenFileTree()
+        })
+        document.querySelector(`.${selector.file.update}`)?.addEventListener('click', () =>{
+            this.File.update()
+            this.reRenderFileTree()
+            this.reListenFileTree()
+        })
 
     }
     renderFileTree() {
@@ -92,6 +112,8 @@ class GUI {
                 const trashIcon: HTMLElement = fileElement.querySelector(`.${selector.file.delete}`)!
                 trashIcon.addEventListener('click', (e:Event) =>{
                     this.File.delete(file)
+                    this.reRenderFileTree()
+                    this.reListenFileTree()
                     e.stopPropagation();
                     e.preventDefault()
                 })
@@ -117,6 +139,8 @@ class GUI {
                 const trashIcon: HTMLElement = dirElement.querySelector(`i`)!
                 trashIcon.addEventListener('click', (e: Event) => {
                     this.Directory.delete(dir)
+                    this.reRenderFileTree()
+                    this.reListenFileTree()
                     e.stopPropagation();
                     e.preventDefault()
                 })

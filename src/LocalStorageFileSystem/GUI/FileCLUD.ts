@@ -43,10 +43,6 @@ class FileCLUD {
         console.log(file)
         this.superThis.Directory.show(file.directoryId)
 
-
-        this.superThis.reRenderFileTree()
-        this.superThis.reListenFileTree()
-
     }
     create() {
 
