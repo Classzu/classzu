@@ -103,8 +103,5 @@ export default class Classzu {
         new LocalStorageFileSystem(this).GUI.set()
         
 
-        // - currentディレクトリの遷移先があっているか
-        //  => テストできず
-
     }
 }
