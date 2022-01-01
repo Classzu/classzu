@@ -142,7 +142,7 @@ class GUI {
                 })
 
                 /**
-                 * add open event
+                 * add open and close event
                  */
                 const caretRightIcon: HTMLElement = dirElement.querySelector(`.${fileTreeSelector.directory.open}`)!
                 const caretDownIcon: HTMLElement = dirElement.querySelector(`.${fileTreeSelector.directory.close}`)!
@@ -154,9 +154,6 @@ class GUI {
                     dirChildren.hidden = false;
                     
                 })
-                /**
-                 * add delete event
-                 */
                 caretDownIcon.addEventListener('click', () => {
 
                     caretRightIcon.hidden = false;
@@ -164,6 +161,9 @@ class GUI {
                     dirChildren.hidden = true;
                     
                 })
+                /**
+                 * add delete event
+                 */
 
                 const trashIcon: HTMLElement = dirElement.querySelector(`.${selector.directory.delete}`)!
                 trashIcon.addEventListener('click', (e: Event) => {
