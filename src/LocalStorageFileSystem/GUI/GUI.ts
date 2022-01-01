@@ -82,7 +82,6 @@ class GUI {
         const rootDirs = new ORM.Directory().getDirectoriesBy("parentDirectoryId")
 
         const fileTreeHTML = new FileTreeHTML({
-            orm: ORM,
             rootDirectories: rootDirs,
             rootFiles: rootFiles
         }).get()

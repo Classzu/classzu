@@ -8,16 +8,13 @@ const selector = Config.GUI.storage.local
 
 
 class FileTreeHTML {
-    private orm: typeof ORM
     private rootDirectories: Directory[]
     private rootFiles: File[]    
 
-    constructor({ orm, rootDirectories, rootFiles }: {
-        orm: typeof ORM,
+    constructor({  rootDirectories, rootFiles }: {
         rootDirectories: Directory[],
         rootFiles: File[]    
     }) {
-        this.orm = orm;
         this.rootDirectories = rootDirectories
         this.rootFiles = rootFiles
     }
@@ -41,15 +38,19 @@ class FileTreeHTML {
     
     treeHTMLFromDirectoryID = (dirID: number): string => {
 
-        const files: File[] = new this.orm.File().getFilesBy("directoryId", dirID)
-        const dirs : Directory[] = new this.orm.Directory().getDirectoriesBy("parentDirectoryId", dirID)
+        const files: File[] = new ORM.File().getFilesBy("directoryId", dirID)
+        const dirs : Directory[] = new ORM.Directory().getDirectoriesBy("parentDirectoryId", dirID)
     
         let html = ``
         for (let i = 0; i < dirs.length; i++) {
             const dir = dirs[i];
             html += `
                 <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
-                    <summary class="justify-content-end">${dir.name} ${this.deleteIcon(selector.directory.delete)}</summary>
+                    <summary>
+                        <div class="d-flex justify-content-between ">
+                            ${dir.name} ${this.deleteIcon(selector.directory.delete)}
+                        </div>
+                    </summary>
                     ${this.treeHTMLFromDirectoryID(dir.ID)}
                 </details>
             `
