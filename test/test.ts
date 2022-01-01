@@ -24,3 +24,31 @@ const classzu = new Classzu('myDiv').useGUI().useLocalFileSystem()
 // console.log(d)
 // const all = lib.queryAll('files', {});
 // console.log(all)
+
+// class Outer {
+//     public val: number
+//     constructor() {
+//         this.val = 1337;
+//     }
+
+//     get Inner() {
+//         return class {
+
+//             constructor(public Outer:Outer){}
+//             accessVal() { return Outer.val; }
+//         }
+//     }
+
+// }
+// const outer = new Outer()
+// const inner1 = new outer.Inner()
+// console.log(inner1.accessVal())
+// console.log(inner1.outer.val)
+
+// outer.val = 1000
+
+// const inner2 = new outer.Inner()
+// console.log(inner1.accessVal())
+// console.log(inner1.outer.val)
+// console.log(inner2.accessVal())
+// console.log(inner2.outer.val)

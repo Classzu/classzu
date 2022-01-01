@@ -29,6 +29,7 @@
   "license": "MIT",
   "description": "",
   "dependencies": {
+    "font-awesome": "^4.7.0",
     "konva": "^8.3.0"
   }
 }
