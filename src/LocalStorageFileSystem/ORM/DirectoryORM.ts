@@ -10,6 +10,13 @@ class DirectoryORM extends ORM {
         super()
 
     }
+    public getDirectories() {
+
+        const lsFields: localStorageDB_fields[] = this.db.queryAll(Directory.name, {})
+        const dirs: Directory[] = lsFields.map(field => new Directory(field as Directory))
+        return dirs;
+
+    }
     public getDirectoriesBy(key:string, value?:any): Directory[] {
 
         if (!value) value = this.rootDirectoryId
@@ -81,12 +88,6 @@ class DirectoryORM extends ORM {
         if (num === 0) new Error(`Failed to delete Directory by ID: ${ID}`)
         this.db.commit() 
         return num !== 0 // deleteRows returns 0 when rows not found.
-
-    }
-    public showDirectories() {
-
-        const all = this.db.queryAll(Directory.name, {});
-        console.log(all)
 
     }
     

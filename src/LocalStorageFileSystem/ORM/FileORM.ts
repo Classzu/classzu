@@ -11,7 +11,7 @@ class FileORM extends ORM {
     }
     public getFiles() {
 
-        const lsFields: localStorageDB_fields[] =  this.db.queryAll(File.name, {})
+        const lsFields: localStorageDB_fields[] = this.db.queryAll(File.name, {})
         const files: File[] = lsFields.map(field => new File(field as File))
         return files;
 
@@ -67,19 +67,6 @@ class FileORM extends ORM {
         return num !== 0 // deleteRows returns 0 when rows not found.
 
     }
-    public showFiles() {
-
-        const all = this.db.queryAll(File.name, {});
-        console.log(all)
-
-    }
-    public showDirectories() {
-
-        const all = this.db.queryAll(Directory.name, {});
-        console.log(all)
-
-    }
-    
 }
 
 export default FileORM
