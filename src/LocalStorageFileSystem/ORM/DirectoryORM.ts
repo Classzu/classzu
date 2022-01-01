@@ -61,12 +61,14 @@ class DirectoryORM extends ORM {
         return new Directory(data as Directory)
         
     }
+    /**
+     * @name deleteDirectory
+     * ORM的にはdependentがtrueかどうかを確認して関連しているファイルを削除するかを決定するべきだけど、
+     * このモジュールはORMというよりかは、DirectoryORMということで、ディレクトリーの関係を管理する存在なので
+     * 今回は、ここで削除するディレクトリに依存する(中にある)ファイルやディレクトリたちも削除することにする。
+     */
     public deleteDirectory(ID: number): boolean {
 
-        //ORM的にはdependentがtrueかどうかを確認して関連しているファイルを削除するかを決定するべきだけど、
-        // このモジュールはORMというよりかは、LocalStorageFileSystemということで、ディレクトリーをの関係を管理するちょっと抽象的な存在なので
-        // 今回は、ここでファイルたちも削除することにする。
-        //↓
         // 論理エラー、何処かで値渡しが起きているのかなぜかGUI側で呼び出した時に
         //GUI側で確認するdbとORM側で確認するdbに違いがある。ひとまず。直接削除することに、
         const files: File[] = new FileORM().getFilesBy("directoryId", ID)
@@ -86,7 +88,7 @@ class DirectoryORM extends ORM {
         // また、他のメソッドも後々そうするべきかも。
         const num = this.db.deleteRows(Directory.name, { ID: ID })
         if (num === 0) new Error(`Failed to delete Directory by ID: ${ID}`)
-        this.db.commit() 
+        this.db.commit()
         return num !== 0 // deleteRows returns 0 when rows not found.
 
     }
