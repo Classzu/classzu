@@ -11,59 +11,62 @@ const icon = {
     caretDown: 'fa fa-caret-down'
 }
 
-class FileTreeHTML {
-    private rootDirectories: Directory[]
-    private rootFiles: File[]    
+class FileTreeHTML {   
 
-    constructor({  rootDirectories, rootFiles }: {
-        rootDirectories: Directory[],
-        rootFiles: File[]    
+    constructor(){}
+    getBase({ directories, files }: {
+        directories: Directory[],
+        files: File[]
     }) {
-        this.rootDirectories = rootDirectories
-        this.rootFiles = rootFiles
-    }
-    get() {
         return createElementFromHTML(
-            this.fileTreeHTML({
-                id: selector.fileTree,
-                directories: this.rootDirectories,
-                files: this.rootFiles,
-            })
+            this.baseHTML({ directories, files })
         ) as Element
     }
-    /**
-     * 再帰を使って一発でファイルツリーを作ってしまうことが可能。LocalStorageを操作する権限を持ってしまう。
-     */
-    
-    treeHTMLFromDirectoryID = (dirID: number): string => {
-
-        const files: File[] = new ORM.File().selectBy("directoryId", dirID)
-        const dirs : Directory[] = new ORM.Directory().selectBy("parentDirectoryId", dirID)
-    
-        let html = ``
-        for (let i = 0; i < dirs.length; i++) {
-            const dir = dirs[i];
-            html += `
-                <div class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}" >
-                    <div class="d-flex justify-content-between align-items-center">
-                        <i class="${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
-                        <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
-                        <div>${dir.name}</div>
-                        <i class="${selector.directory.delete} ${icon.trash}"></i>
-                    </div>
-                    <div class="${fileTreeSelector.directory.children}" hidden>
-                        ${this.treeHTMLFromDirectoryID(dir.ID)}
+    getChildren({ directories, files }: {
+        directories: Directory[],
+        files: File[]
+    }) {
+        return createElementFromHTML(
+            this.childrenHTML({ directories, files })
+        ) as Element
+    }
+    baseHTML({ directories, files }: {
+        directories: Directory[],
+        files: File[]
+    }): string {
+        // 中にあるdivタグはディレクトリ自体を表しているので、本来はこの部分はbaseではなくdirectoryHTML()というメソッドからHTMlを受け取るべきだし、他のメソッドもその観点から少し実装の仕方が少しずれているけど今はコメントを残すだけにしておく。
+        // ディレクトリが開かれているかどうかなどの状態を管理できるようになった際にはこのずれを修正したい。rootDirectoryは今は開いていてほしい。
+        // ここでの考え方は、rootがいくつものファイルとディクトりから始まるのか、それとも一つのディレクトリから始まるのかっていう考え方から変わってくる。
+        const rootDirID = 1;
+        let html = `
+            <div id="${selector.fileTree}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
+                <div  class="directory overflow-auto local-system-file-tree" data-directory-id="${rootDirID}">
+                    <div class="${fileTreeSelector.directory.children}" >
+                        <div class="d-flex justify-content-between align-items-center" >
+                            <i class="${fileTreeSelector.directory.open} ${icon.caretRight}" hidden></i>
+                            <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                        </div>
+                        ${this.childrenHTML({
+                            directories,
+                            files
+                        })}
                     </div>
                 </div>
-            `
-        }
-        html += this.filesHTML(files)
-    
-        return html
+            </div>
+        `
+        return html;
     }
-    /**
-     *  本来LocalStorageFileSystemを扱う権限を持たせたくないので後々このメソッドを拡張していく
-     */
+    childrenHTML({ directories, files }: {
+        directories: Directory[],
+        files: File[]
+    }): string {
+        return `
+            <div class="${fileTreeSelector.directory.children}">
+                ${this.directoriesHTML(directories)}
+                ${this.filesHTML(files)}
+            </div>
+        `
+    }
     directoriesHTML = (directories: Directory[]): string => {
         let html = ``
         for (let i = 0; i < directories.length; i++) {
@@ -77,7 +80,6 @@ class FileTreeHTML {
                         <i class="${selector.directory.delete} ${icon.trash}"></i>
                     </div>
                     <div class="${fileTreeSelector.directory.children}" hidden>
-                        ${this.treeHTMLFromDirectoryID(dir.ID)}
                     </div>
                 </div>
             `
@@ -85,10 +87,6 @@ class FileTreeHTML {
     
         return html
     }
-    
-    /**
-     * こっから下はそのまま使いたい。
-     */
     filesHTML = (files: File[]): string => {
         let html = ``
         for (let i = 0; i < files.length; i++) {
@@ -102,26 +100,6 @@ class FileTreeHTML {
         }
     
         return html
-    }
-    fileTreeHTML({ id, directories, files }: {
-        id: string,
-        directories: Directory[],
-        files: File[]
-    }): string {
-    
-        //RootDirectoryにはdata-directory-idをつけない
-        //RootDirectoryはイメージ的には特別なディレクトリで他のモデルにしたい。
-        //けど今はしない理由はDirectoryモデルにコメント済み。
-        let html = `
-            <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
-                <div  class="directory overflow-auto local-system-file-tree">
-                ${this.directoriesHTML(directories) }
-                ${this.filesHTML(files) }
-                </div>
-            </div>
-        `
-    
-        return html;
     }
     
 }

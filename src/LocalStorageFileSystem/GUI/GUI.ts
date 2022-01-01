@@ -35,14 +35,15 @@ class GUI {
          */
         this.Directory.show(1)
 
-
         return this;
 
     }
     renderForm() {
+
         const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
         const formHTML = new FormHTML().get()
         guiElement.append(formHTML)
+
     }
     listenForm() {
 
@@ -87,15 +88,19 @@ class GUI {
         const rootFiles = new ORM.File().selectBy("directoryId")
         const rootDirs = new ORM.Directory().selectBy("parentDirectoryId")
 
-        const fileTreeHTML = new FileTreeHTML({
-            rootDirectories: rootDirs,
-            rootFiles: rootFiles
-        }).get()
+        const fileTreeHTML = new FileTreeHTML().getBase({
+            directories: rootDirs,
+            files: rootFiles,
+        })
+        
         guiElement.append(fileTreeHTML)
+
     }
     reRenderFileTree() {
+
         document.getElementById(selector.fileTree)?.remove()
         this.renderFileTree()
+
     }
     listenFileTree() {
         
@@ -123,7 +128,8 @@ class GUI {
                     e.stopPropagation();
                     e.preventDefault()
                 })
-            });            
+            });
+            
         }
         const listenDirectories = () => {
 
@@ -164,7 +170,6 @@ class GUI {
                 /**
                  * add delete event
                  */
-
                 const trashIcon: HTMLElement = dirElement.querySelector(`.${selector.directory.delete}`)!
                 trashIcon.addEventListener('click', (e: Event) => {
                     this.Directory.delete(dir)
@@ -178,6 +183,7 @@ class GUI {
 
         listenFiles()
         listenDirectories()
+
     }
     reListenFileTree() {
 
