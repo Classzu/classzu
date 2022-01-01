@@ -3,9 +3,13 @@ import Directory from "../../models/Directory";
 import File from "../../models/File";
 import { createElementFromHTML } from "@/utils"
 import * as ORM from "@/LocalStorageFileSystem/ORM";
-
+const fileTreeSelector = Config.GUI.fileTree
 const selector = Config.GUI.storage.local
-
+const icon = {
+    trash: 'fa fa-trash-o',
+    caretRight: 'fa fa-caret-right',
+    caretDown: 'fa fa-caret-down'
+}
 
 class FileTreeHTML {
     private rootDirectories: Directory[]
@@ -27,11 +31,6 @@ class FileTreeHTML {
             })
         ) as Element
     }
-    deleteIcon(selector: string){
-        return `
-            <i class="${selector} fa fa-trash-o align-self-center"></i>
-        `
-    }
     /**
      * 再帰を使って一発でファイルツリーを作ってしまうことが可能。LocalStorageを操作する権限を持ってしまう。
      */
@@ -45,14 +44,17 @@ class FileTreeHTML {
         for (let i = 0; i < dirs.length; i++) {
             const dir = dirs[i];
             html += `
-                <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
-                    <summary>
-                        <div class="d-flex justify-content-between ">
-                            ${dir.name} ${this.deleteIcon(selector.directory.delete)}
-                        </div>
-                    </summary>
-                    ${this.treeHTMLFromDirectoryID(dir.ID)}
-                </details>
+                <div class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}" >
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
+                        <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                        <div>${dir.name}</div>
+                        <i class="${selector.directory.delete} ${icon.trash}"></i>
+                    </div>
+                    <div class="${fileTreeSelector.directory.children}" hidden>
+                        ${this.treeHTMLFromDirectoryID(dir.ID)}
+                    </div>
+                </div>
             `
         }
         html += this.filesHTML(files)
@@ -66,18 +68,18 @@ class FileTreeHTML {
         let html = ``
         for (let i = 0; i < directories.length; i++) {
             const dir = directories[i];
-            // html += `
-            //     <div class="file" data-directory-id="${dir.ID}">${dir.name}</div>
-            // `
             html += `
-                <details class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}">
-                    <summary>
-                        <div class="d-flex justify-content-between ">
-                            ${dir.name} ${this.deleteIcon(selector.directory.delete)}
-                        </div>
-                    </summary>
-                    ${this.treeHTMLFromDirectoryID(dir.ID)}
-                </details>
+                <div class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}" >
+                    <div class="d-flex justify-content-between align-items-center">
+                        <i class="${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
+                        <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                        <div>${dir.name}</div>
+                        <i class="${selector.directory.delete} ${icon.trash}"></i>
+                    </div>
+                    <div class="${fileTreeSelector.directory.children}" hidden>
+                        ${this.treeHTMLFromDirectoryID(dir.ID)}
+                    </div>
+                </div>
             `
         }
     
@@ -94,14 +96,13 @@ class FileTreeHTML {
             html += `
                 <div class="file bg-white p-2 m-2 rounded d-flex justify-content-between" data-file-id="${file.ID}">
                     ${file.name} 
-                    ${this.deleteIcon(selector.file.delete)}
+                    <i class="${selector.file.delete} ${icon.trash} align-self-center"></i>
                 </div>
             `
         }
     
         return html
     }
-    
     fileTreeHTML({ id, directories, files }: {
         id: string,
         directories: Directory[],

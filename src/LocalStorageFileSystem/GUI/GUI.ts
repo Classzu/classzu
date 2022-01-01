@@ -7,7 +7,7 @@ import FormHTML from "./tamplates/form";
 import * as ORM from '../ORM'
 
 import Config from "@/config";
-
+const fileTreeSelector = Config.GUI.fileTree
 const selector = Config.GUI.storage.local
 
 class GUI {
@@ -126,6 +126,7 @@ class GUI {
             });            
         }
         const listenDirectories = () => {
+
             const dirElements = getClasszuElement(this.superThis.classzu.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-directory-id]`);
             dirElements.forEach(dirElement => {
                 const id = parseInt(dirElement.getAttribute("data-directory-id")!)
@@ -139,10 +140,32 @@ class GUI {
                     //details タグを使っているためコメントアウト
                     // e.preventDefault()
                 })
+
+                /**
+                 * add open event
+                 */
+                const caretRightIcon: HTMLElement = dirElement.querySelector(`.${fileTreeSelector.directory.open}`)!
+                const caretDownIcon: HTMLElement = dirElement.querySelector(`.${fileTreeSelector.directory.close}`)!
+                const dirChildren: HTMLElement = dirElement.querySelector(`.${fileTreeSelector.directory.children}`)!
+                caretRightIcon.addEventListener('click', () => {
+
+                    caretRightIcon.hidden = true;
+                    caretDownIcon.hidden = false;
+                    dirChildren.hidden = false;
+                    
+                })
                 /**
                  * add delete event
                  */
-                const trashIcon: HTMLElement = dirElement.querySelector(`i`)!
+                caretDownIcon.addEventListener('click', () => {
+
+                    caretRightIcon.hidden = false;
+                    caretDownIcon.hidden = true;
+                    dirChildren.hidden = true;
+                    
+                })
+
+                const trashIcon: HTMLElement = dirElement.querySelector(`.${selector.directory.delete}`)!
                 trashIcon.addEventListener('click', (e: Event) => {
                     this.Directory.delete(dir)
                     this.reRenderFileTree()
