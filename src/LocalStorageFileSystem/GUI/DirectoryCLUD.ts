@@ -92,7 +92,7 @@ class DirectoryCLUD {
     delete(directory: Directory) {
 
         // 関連しているファイルたちはLocalStorageFileSystem側で削除している理由はメソッド内にコメント済み
-        new this.superThis.superThis.ORM.Directory().deleteDirectory(directory.ID)
+        new ORM.Directory().deleteDirectory(directory.ID)
 
         /**
          * 本当は親フォルダを表示させたい。

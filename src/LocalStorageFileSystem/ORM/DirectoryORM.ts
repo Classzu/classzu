@@ -59,8 +59,6 @@ class DirectoryORM extends ORM {
         //ORM的にはdependentがtrueかどうかを確認して関連しているファイルを削除するかを決定するべきだけど、
         // このモジュールはORMというよりかは、LocalStorageFileSystemということで、ディレクトリーをの関係を管理するちょっと抽象的な存在なので
         // 今回は、ここでファイルたちも削除することにする。
-        const fileOrm = new FileORM()
-        const files: File[] = fileOrm.getFilesBy("directoryId", ID)
         //↓
         // 論理エラー、何処かで値渡しが起きているのかなぜかGUI側で呼び出した時に
         //GUI側で確認するdbとORM側で確認するdbに違いがある。ひとまず。直接削除することに、
@@ -69,6 +67,12 @@ class DirectoryORM extends ORM {
             const num = this.db.deleteRows(File.name, { ID: file.ID })
             // new FileORM().deleteFile(file.ID)
         })
+        
+        const innerDirectories: Directory[] = this.getDirectoriesBy("parentDirectoryId", ID)
+        innerDirectories.forEach(dir => {
+            this.deleteDirectory(dir.ID)
+        })
+
         this.db.commit()
 
         // IDでファイルが削除できない場合、Errorをthrowしないのはフロント側でエラーが起きたことをどう処理するかを任せることができるため、代わりにbooleanを返す。
