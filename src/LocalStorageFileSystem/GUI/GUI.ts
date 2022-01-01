@@ -52,10 +52,10 @@ class GUI {
             this.reListenFileTree()
         })
         document.querySelector(`.${selector.debug.showFileAll}`)?.addEventListener('click', () =>{
-            console.log(new ORM.File().getFiles())
+            console.log(new ORM.File().selectAll())
         })
         document.querySelector(`.${selector.debug.showDirAll}`)?.addEventListener('click', () =>{
-            console.log(new ORM.Directory().getDirectories())
+            console.log(new ORM.Directory().selectAll())
         })
         document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', () =>{
             this.Directory.create()
@@ -84,8 +84,8 @@ class GUI {
         
         const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
 
-        const rootFiles = new ORM.File().getFilesBy("directoryId")
-        const rootDirs = new ORM.Directory().getDirectoriesBy("parentDirectoryId")
+        const rootFiles = new ORM.File().selectBy("directoryId")
+        const rootDirs = new ORM.Directory().selectBy("parentDirectoryId")
 
         const fileTreeHTML = new FileTreeHTML({
             rootDirectories: rootDirs,
@@ -103,7 +103,7 @@ class GUI {
             const fileElements = getClasszuElement(this.superThis.classzu.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-file-id]`);
             fileElements.forEach(fileElement => {
                 const id = parseInt(fileElement.getAttribute("data-file-id")!)
-                const file = new ORM.File().getFile(id)
+                const file = new ORM.File().selectByID(id)
                 /**
                  * add show event
                  */
@@ -129,7 +129,7 @@ class GUI {
             const dirElements = getClasszuElement(this.superThis.classzu.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-directory-id]`);
             dirElements.forEach(dirElement => {
                 const id = parseInt(dirElement.getAttribute("data-directory-id")!)
-                const dir = new ORM.Directory().getDirectory(id)
+                const dir = new ORM.Directory().selectByID(id)
                 /**
                  * add show event
                  */

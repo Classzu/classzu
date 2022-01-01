@@ -18,7 +18,7 @@ class DirectoryCLUD {
     }
     show(a: number | Directory) {
                 
-        const dir: Directory = (typeof a === "number") ? new ORM.Directory().getDirectory(a) : a;
+        const dir: Directory = (typeof a === "number") ? new ORM.Directory().selectByID(a) : a;
 
         const showIdSelector = `.${selector.directory.show} input[name="id"]`
         const showNameSelector = `.${selector.directory.show} input[name="name"]`
@@ -60,7 +60,7 @@ class DirectoryCLUD {
 
         newName.value = ''
 
-        const dir = new ORM.Directory().createDirectory(newDir)
+        const dir = new ORM.Directory().create(newDir)
         this.show(dir)
 
     }
@@ -78,20 +78,20 @@ class DirectoryCLUD {
         if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
         if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
 
-        const oldDir: Directory = new ORM.Directory().getDirectory(parseInt(showId.value))
+        const oldDir: Directory = new ORM.Directory().selectByID(parseInt(showId.value))
         const newDir: DirectoryNullable = new DirectoryNullable({
             name: editName.value,
             parentDirectoryId: parseInt(showDirId.value)
         })
 
-        const dir = new ORM.Directory().updateDirectory(oldDir, newDir)
+        const dir = new ORM.Directory().update(oldDir, newDir)
         this.show(dir)
         
     }
     delete(directory: Directory) {
 
         // 関連しているファイルたちはLocalStorageFileSystem側で削除している理由はメソッド内にコメント済み
-        new ORM.Directory().deleteDirectory(directory.ID)
+        new ORM.Directory().delete(directory.ID)
 
         /**
          * 本当は親フォルダを表示させたい。
@@ -102,7 +102,7 @@ class DirectoryCLUD {
 
         // new this.DirectoryREST().show(dirId)
         //↓
-        let files: File[] = new ORM.File().getFiles()
+        let files: File[] = new ORM.File().selectAll()
         if (files.length !== 0) {
             const redirectFile: File = files.shift()!
             this.superThis.File.show(redirectFile)
@@ -114,7 +114,7 @@ class DirectoryCLUD {
                 data: newStage.toJSON(),
                 directoryId: 1,
             })
-            const redirectFile: File = new ORM.File().createFile(newFile)
+            const redirectFile: File = new ORM.File().create(newFile)
             this.superThis.File.show(redirectFile)
         }
 

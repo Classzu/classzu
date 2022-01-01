@@ -9,14 +9,14 @@ class FileORM extends ORM {
         super()
 
     }
-    public getFiles() {
+    public selectAll() {
 
         const lsFields: localStorageDB_fields[] = this.db.queryAll(File.name, {})
         const files: File[] = lsFields.map(field => new File(field as File))
         return files;
 
     }
-    public getFilesBy(key:string, value?: any): File[]{
+    public selectBy(key:string, value?: any): File[]{
 
         if (!value) value = this.rootDirectoryId
         const lsFields: localStorageDB_fields[] = this.db.queryAll(File.name, {
@@ -28,14 +28,14 @@ class FileORM extends ORM {
         return files;
 
     }
-    public createFile(newFile: FileNullable): File {
+    public create(newFile: FileNullable): File {
 
         const ID = this.db.insert(File.name, newFile)
         this.db.commit()
-        return this.getFile(ID);
+        return this.selectByID(ID);
 
     }
-    public updateFile(oldFile: File, newFile: FileNullable): File {
+    public update(oldFile: File, newFile: FileNullable): File {
 
         //https://github.com/knadh/localStorageDB # update()
         // >  returns the number of rows affected
@@ -49,10 +49,10 @@ class FileORM extends ORM {
             return row
         })
         this.db.commit()
-        return this.getFile(oldFile.ID)
+        return this.selectByID(oldFile.ID)
 
     }
-    public getFile(ID: number): File {
+    public selectByID(ID: number): File {
 
         const data = this.db.query(File.name, { ID: ID }).shift()
         if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
@@ -60,7 +60,7 @@ class FileORM extends ORM {
         return new File(data as File)
 
     }
-    public deleteFile(ID:number): boolean {
+    public delete(ID:number): boolean {
 
         const num = this.db.deleteRows(File.name, { ID: ID })
         this.db.commit()
