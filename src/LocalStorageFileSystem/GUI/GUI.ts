@@ -4,6 +4,7 @@ import DirectoryCLUD from "./DirectoryCLUD";
 import FileCLUD from "./FileCLUD";
 import FileTreeHTML from "./tamplates/fileTree";
 import FormHTML from "./tamplates/form";
+import * as ORM from '../ORM'
 
 import Config from "@/config";
 
@@ -46,7 +47,7 @@ class GUI {
     listenForm() {
 
         document.querySelector(`.${selector.clear}`)?.addEventListener('click', () =>{
-            new this.superThis.ORM.DB().drop()
+            new ORM.DB().drop()
             this.reRenderFileTree()
             this.reListenFileTree()
         })
@@ -77,11 +78,11 @@ class GUI {
         
         const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
 
-        const rootFiles = new this.superThis.ORM.File().getFilesBy("directoryId")
-        const rootDirs = new this.superThis.ORM.Directory().getDirectoriesBy("parentDirectoryId")
+        const rootFiles = new ORM.File().getFilesBy("directoryId")
+        const rootDirs = new ORM.Directory().getDirectoriesBy("parentDirectoryId")
 
         const fileTreeHTML = new FileTreeHTML({
-            orm: this.superThis.ORM,
+            orm: ORM,
             rootDirectories: rootDirs,
             rootFiles: rootFiles
         }).get()
@@ -97,7 +98,7 @@ class GUI {
             const fileElements = getClasszuElement(this.superThis.classzu.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-file-id]`);
             fileElements.forEach(fileElement => {
                 const id = parseInt(fileElement.getAttribute("data-file-id")!)
-                const file = new this.superThis.ORM.File().getFile(id)
+                const file = new ORM.File().getFile(id)
                 /**
                  * add show event
                  */
@@ -123,7 +124,7 @@ class GUI {
             const dirElements = getClasszuElement(this.superThis.classzu.rootElementId, "gui").querySelectorAll(`#${selector.fileTree} [data-directory-id]`);
             dirElements.forEach(dirElement => {
                 const id = parseInt(dirElement.getAttribute("data-directory-id")!)
-                const dir = new this.superThis.ORM.Directory().getDirectory(id)
+                const dir = new ORM.Directory().getDirectory(id)
                 /**
                  * add show event
                  */

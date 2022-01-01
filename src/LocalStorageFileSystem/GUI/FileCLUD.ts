@@ -3,6 +3,7 @@ import File, { FileNullable } from '../models/File'
 import Config from '@/config'
 import ClasszuLoader from "@/ClasszuLoader";
 import Konva from "konva";
+import * as ORM from '../ORM'
 
 const selector = Config.GUI.storage.local
 
@@ -17,7 +18,7 @@ class FileCLUD {
     }
     show(a: number | File) {
                 
-        const file: File = (typeof a === "number") ? new this.superThis.superThis.ORM.File().getFile(a) : a;
+        const file: File = (typeof a === "number") ? new ORM.File().getFile(a) : a;
 
         const showIdSelector = `.${selector.file.show} input[name="id"]`
         const showNameSelector = `.${selector.file.show} input[name="name"]`
@@ -66,7 +67,7 @@ class FileCLUD {
 
         newName.value = ''
 
-        const file = new this.superThis.superThis.ORM.File().createFile(newFile)
+        const file = new ORM.File().createFile(newFile)
         this.show(file)
 
     }
@@ -84,22 +85,21 @@ class FileCLUD {
         if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
         if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
 
-        const oldFile: File = new this.superThis.superThis.ORM.File().getFile(parseInt(showId.value))
+        const oldFile: File = new ORM.File().getFile(parseInt(showId.value))
         const newFile: FileNullable = new FileNullable({
             name: editName.value,
             data: this.superThis.superThis.classzu.stage.toJSON(),
             directoryId: parseInt(showDirId.value)
         })
 
-        const file = new this.superThis.superThis.ORM.File().updateFile(oldFile, newFile)
+        const file = new ORM.File().updateFile(oldFile, newFile)
         this.show(file)
 
     }
     delete(file: File) {
 
         const dirId = file.directoryId
-        const fileCLUD = new this.superThis.superThis.ORM.File()
-        fileCLUD.deleteFile(file.ID)
+        new ORM.File().deleteFile(file.ID)
 
          /**
          * delete後は親ディレクトリを表示
@@ -109,7 +109,7 @@ class FileCLUD {
 
         // new this.DirectoryREST().show(dirId)
         //↓
-        let files: File[] = new this.superThis.superThis.ORM.File().getFilesBy("directoryId", dirId)
+        let files: File[] = new ORM.File().getFilesBy("directoryId", dirId)
         if (files.length !== 0) {
             const redirectFile: File = files.shift()!
             this.show(redirectFile)
@@ -121,7 +121,7 @@ class FileCLUD {
                 data: newStage.toJSON(),
                 directoryId: dirId,
             })
-            const redirectFile: File = new this.superThis.superThis.ORM.File().createFile(newFile)
+            const redirectFile: File = new ORM.File().createFile(newFile)
             this.show(redirectFile)
         }
 

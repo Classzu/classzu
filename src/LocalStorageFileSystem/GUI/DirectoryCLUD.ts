@@ -2,6 +2,8 @@ import GUI from "./GUI";
 import Directory, { DirectoryNullable } from "../models/Directory";
 import File, { FileNullable } from '../models/File'
 import Config from '@/config'
+import * as ORM from '../ORM'
+import Konva from "konva";
 
 const selector = Config.GUI.storage.local
 
@@ -16,7 +18,7 @@ class DirectoryCLUD {
     }
     show(a: number | Directory) {
                 
-        const dir: Directory = (typeof a === "number") ? new this.superThis.superThis.ORM.Directory().getDirectory(a) : a;
+        const dir: Directory = (typeof a === "number") ? new ORM.Directory().getDirectory(a) : a;
 
         const showIdSelector = `.${selector.directory.show} input[name="id"]`
         const showNameSelector = `.${selector.directory.show} input[name="name"]`
@@ -39,9 +41,6 @@ class DirectoryCLUD {
         showDirId.value = String(dir.parentDirectoryId)
         console.log(dir)
 
-
-        this.superThis.reRenderFileTree()
-        this.superThis.reListenFileTree()
     }
     create() {
 
@@ -61,7 +60,7 @@ class DirectoryCLUD {
 
         newName.value = ''
 
-        const dir = new this.superThis.superThis.ORM.Directory().createDirectory(newDir)
+        const dir = new ORM.Directory().createDirectory(newDir)
         this.show(dir)
 
     }
@@ -79,13 +78,13 @@ class DirectoryCLUD {
         if (!showId) throw new Error(`Cannot find Element with selector: '${showIdSelector}'`)
         if (!showDirId) throw new Error(`Cannot find Element with selector: '${showDirIdSelector}'`)
 
-        const oldDir: Directory = new this.superThis.superThis.ORM.Directory().getDirectory(parseInt(showId.value))
+        const oldDir: Directory = new ORM.Directory().getDirectory(parseInt(showId.value))
         const newDir: DirectoryNullable = new DirectoryNullable({
             name: editName.value,
             parentDirectoryId: parseInt(showDirId.value)
         })
 
-        const dir = new this.superThis.superThis.ORM.Directory().updateDirectory(oldDir, newDir)
+        const dir = new ORM.Directory().updateDirectory(oldDir, newDir)
         this.show(dir)
         
     }
@@ -103,14 +102,11 @@ class DirectoryCLUD {
 
         // new this.DirectoryREST().show(dirId)
         //↓
-
-        let files: File[] = new this.superThis.superThis.ORM.File().getFiles()
+        let files: File[] = new ORM.File().getFiles()
         if (files.length !== 0) {
             const redirectFile: File = files.shift()!
             this.superThis.File.show(redirectFile)
-
         } else {
-
             const newStage: Konva.Stage = this.superThis.superThis.classzu.stage.clone()
             newStage.getLayers()[0].destroyChildren()
             const newFile: FileNullable = new FileNullable({
@@ -118,7 +114,7 @@ class DirectoryCLUD {
                 data: newStage.toJSON(),
                 directoryId: 1,
             })
-            const redirectFile: File = new this.superThis.superThis.ORM.File().createFile(newFile)
+            const redirectFile: File = new ORM.File().createFile(newFile)
             this.superThis.File.show(redirectFile)
         }
 
