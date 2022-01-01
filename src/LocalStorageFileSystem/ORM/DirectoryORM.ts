@@ -17,6 +17,14 @@ class DirectoryORM extends ORM {
         return dirs;
 
     }
+    public selectByID(ID: number): Directory {
+
+        const data = this.db.query(Directory.name, function (row: localStorageDB_fields) { return row.ID == ID }).shift()
+        if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
+        
+        return new Directory(data as Directory)
+        
+    }
     public selectBy(key:string, value?:any): Directory[] {
 
         if (!value) value = this.rootDirectoryId
@@ -52,14 +60,6 @@ class DirectoryORM extends ORM {
         this.db.commit()
         return this.selectByID(oldDirectory.ID)
 
-    }
-    public selectByID(ID: number): Directory {
-
-        const data = this.db.query(Directory.name, function (row: localStorageDB_fields) { return row.ID == ID }).shift()
-        if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
-        
-        return new Directory(data as Directory)
-        
     }
     /**
      * @name deleteDirectory

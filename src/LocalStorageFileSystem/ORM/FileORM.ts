@@ -16,6 +16,14 @@ class FileORM extends ORM {
         return files;
 
     }
+    public selectByID(ID: number): File {
+
+        const data = this.db.query(File.name, { ID: ID }).shift()
+        if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
+        
+        return new File(data as File)
+
+    }
     public selectBy(key:string, value?: any): File[]{
 
         if (!value) value = this.rootDirectoryId
@@ -50,14 +58,6 @@ class FileORM extends ORM {
         })
         this.db.commit()
         return this.selectByID(oldFile.ID)
-
-    }
-    public selectByID(ID: number): File {
-
-        const data = this.db.query(File.name, { ID: ID }).shift()
-        if (!data) throw new Error(`Data not found. Find by ID: ${ID}`)
-        
-        return new File(data as File)
 
     }
     public delete(ID:number): boolean {
