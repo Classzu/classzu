@@ -51,6 +51,12 @@ class GUI {
             this.reRenderFileTree()
             this.reListenFileTree()
         })
+        document.querySelector(`.${selector.debug.showFileAll}`)?.addEventListener('click', () =>{
+            console.log(new ORM.File().getFiles())
+        })
+        document.querySelector(`.${selector.debug.showDirAll}`)?.addEventListener('click', () =>{
+            console.log(new ORM.Directory().getDirectories())
+        })
         document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', () =>{
             this.Directory.create()
             this.reRenderFileTree()

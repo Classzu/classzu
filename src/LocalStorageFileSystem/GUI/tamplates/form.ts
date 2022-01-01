@@ -4,7 +4,7 @@ import { createElementFromHTML } from "@/utils"
 class FormHTML {
     constructor() { }
     get() {
-        const { clear, file, directory } = Config.GUI.storage.local;
+        const { clear, file, directory, debug } = Config.GUI.storage.local;
 
         return createElementFromHTML(
         `
@@ -12,9 +12,9 @@ class FormHTML {
                 <div class="overflow-auto local-system-form" >
                     <details class="bg-white p-2 m-2 rounded">
                         <summary>LocalStorage</summary>
-                        <div>
-                            <button class="btn ${clear}">drop</button>
-                        </div>
+                        <div><button class="btn ${clear}">drop</button></div>
+                        <div><button class="btn ${debug.showFileAll}">files all</button></div>
+                        <div><button class="btn ${debug.showDirAll}">directories all</button></div>
                     </details>
 
                     <details class="bg-white p-2 m-2 rounded">

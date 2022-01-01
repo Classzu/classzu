@@ -22,6 +22,10 @@ const GUI = {
                 update: `update-${getUniqueStr()}`,
                 delete: `delete-${getUniqueStr()}`,
             },
+            debug: {
+                showDirAll: `showDirAll-${getUniqueStr()}`,
+                showFileAll: `showFileAll-${getUniqueStr()}`,
+            },
             clear: 'gui-storage-local-clear',
             fileTree: "file-tree"
         },
