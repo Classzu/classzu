@@ -45,6 +45,7 @@ class FileTreeHTML {
                         <div class="d-flex justify-content-between align-items-center" >
                             <i class="${fileTreeSelector.directory.open} ${icon.caretRight}" hidden></i>
                             <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                            <i class="${selector.directory.delete} ${icon.trash}" hidden></i>
                         </div>
                         ${this.childrenHTML({
                             directories,
