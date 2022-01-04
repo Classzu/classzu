@@ -1,7 +1,7 @@
 // import Classzu from '../dist/index'
 
 import Classzu from '../src/index'
-import '../src/css/style.css'
+import '../src/css/style.scss'
 
 
 import localStorageDB from 'localStorageDB'

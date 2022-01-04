@@ -41,7 +41,7 @@ module.exports = {
                     {
                         loader: 'babel-loader',
                         options: {
-                            presets: ['@babel/preset-env'],
+                            presets: [ '@babel/preset-env' ],
                         }
                     }
                 ],
@@ -50,21 +50,24 @@ module.exports = {
                 }
             },
             {
-                test: /\.css$/,
+                test: /\.(css|scss)$/,
                 use: [
-                    'style-loader', 
+                    'style-loader',
                     'css-loader',
-                ],
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                config: path.resolve(__dirname, "../postcss.config.js"),
+                            },
+                        }
+                    },
+                ]
             },
-            // {
-            //     test:/\.html$/,
-            //     use: ["html-loader"]
-            // },
             {
                 test: /\.(svg|jpg|png)$/,
                 type: "asset/resource",
             },
         ],
     },
-    
 };

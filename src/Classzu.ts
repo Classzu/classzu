@@ -3,8 +3,8 @@ import Konva from 'konva';
 import Class from './Class';
 import Config from './config/index'
 import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, createElementFromHTML } from './utils/index'
-import ClasszuLoader from './ClasszuLoader'
-// import { Directory, DirectoryNullable, File, FileNullable } from '@/LocalStorageFileSystem/models';
+
+// import 'css/style.min.css'
 
 /**
  * HTML getters

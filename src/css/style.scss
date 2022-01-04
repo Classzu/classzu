@@ -1,18 +1,23 @@
 @import url('https://use.fontawesome.com/releases/v5.15.4/css/all.css');
 @import url('https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css');
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
 
 input {
     padding: 5px;
     border: #333 solid 1px;
 }
-.btn {
-    background-color: #fff;
-    color: #333;
-    border: 1px solid green; 
-}
 
-.hello {
-    color: black;
+.btn {
+    @apply font-bold py-2 px-4 rounded;
+}
+.btn-blue {
+    @apply bg-blue-500 text-white;
+}
+.btn-blue:hover {
+    @apply bg-blue-700;
 }
 
 .file {
