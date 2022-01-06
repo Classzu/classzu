@@ -11,6 +11,7 @@ import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, crea
  */
 import getGuiHTML from './tamplates/gui/index'
 import LocalStorageFileSystem from './LocalStorageFileSystem';
+import { render } from 'react-dom';
 
 export default class Classzu {
     
@@ -99,8 +100,11 @@ export default class Classzu {
 
     }
     public useLocalFileSystem() {
-
-        new LocalStorageFileSystem(this).GUI.set()
+        //guiをないにrenderすることで、this.useGUIでrenderingされるものが相殺されるので、
+        //後でguiとは別のElementを用意する必要がある。
+        const guiElement: HTMLElement = getClasszuElement(this._rootElementId, "gui")
+        const localStorageFileSystem = new LocalStorageFileSystem(this)
+        render(localStorageFileSystem.GUI.render(), guiElement)
         
     }
 }

@@ -26,6 +26,13 @@ class GUI extends React.Component{
         this.superThis = superThis;
 
     }
+    render(): JSX.Element {
+        return (
+            <div>
+                heyyyyyyy
+            </div>
+        )
+    }
     set() {
         
         this.renderForm()

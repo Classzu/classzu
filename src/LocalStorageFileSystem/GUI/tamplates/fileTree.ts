@@ -4,9 +4,6 @@ import File from "../../models/File";
 import { createElementFromHTML } from "@/utils"
 import * as ORM from "@/LocalStorageFileSystem/ORM";
 
-import './jsxTest'
-
-
 const fileTreeSelector = Config.GUI.fileTree
 const selector = Config.GUI.storage.local
 const icon = {
