@@ -56,18 +56,6 @@ class GUI extends React.Component{
 
     }
     listenForm() {
-
-        document.querySelector(`.${selector.clear}`)?.addEventListener('click', () =>{
-            new ORM.DB().drop()
-            this.reRenderFileTree()
-            this.reListenFileTree()
-        })
-        document.querySelector(`.${selector.debug.showFileAll}`)?.addEventListener('click', () =>{
-            console.log(new ORM.File().selectAll())
-        })
-        document.querySelector(`.${selector.debug.showDirAll}`)?.addEventListener('click', () =>{
-            console.log(new ORM.Directory().selectAll())
-        })
         document.querySelector(`.${selector.directory.create}`)?.addEventListener('click', () =>{
             this.Directory.create()
             this.reRenderFileTree()
