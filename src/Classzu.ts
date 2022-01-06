@@ -105,6 +105,8 @@ export default class Classzu {
         const guiElement: HTMLElement = getClasszuElement(this._rootElementId, "gui")
         const localStorageFileSystem = new LocalStorageFileSystem(this)
         render(localStorageFileSystem.GUI.render(), guiElement)
+
+        localStorageFileSystem.GUI.listen()// for debug
         
     }
 }

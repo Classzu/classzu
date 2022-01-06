@@ -4,7 +4,7 @@ import Classzu from '../src/index'
 import '../src/css/style.scss'
 
 
-import localStorageDB from 'localStorageDB'
+// import localStorageDB from 'localStorageDB'
 
 
 const classzu = new Classzu('myDiv').useGUI().useLocalFileSystem()

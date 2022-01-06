@@ -27,20 +27,24 @@ class GUI extends React.Component{
 
     }
     render(): JSX.Element {
+        const rootFiles = new ORM.File().selectBy("directoryId")
+        const rootDirs = new ORM.Directory().selectBy("parentDirectoryId")
         return (
             <div>
-                heyyyyyyy
+                <FormHTML />
+                <FileTreeHTML {...{
+                    rootDirectories: rootDirs,
+                    rootFiles: rootFiles,
+                }} />
             </div>
         )
     }
-    set() {
+    listen() {
         
-        this.renderForm()
         this.listenForm()
 
     
-        this.renderFileTree()
-        this.listenFileTree()
+        // this.listenFileTree()
         
         /**
          * default show
@@ -50,11 +54,6 @@ class GUI extends React.Component{
 
         return this;
 
-    }
-    renderForm() {
-        const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
-        const formHTML = new FormHTML().get()
-        render(formHTML, guiElement)
     }
     listenForm() {
 
@@ -94,16 +93,16 @@ class GUI extends React.Component{
     }
     renderFileTree() {
         
-        const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
+        // const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
 
-        const rootFiles = new ORM.File().selectBy("directoryId")
-        const rootDirs = new ORM.Directory().selectBy("parentDirectoryId")
+        // const rootFiles = new ORM.File().selectBy("directoryId")
+        // const rootDirs = new ORM.Directory().selectBy("parentDirectoryId")
 
-        const fileTreeHTML = new FileTreeHTML({
-            rootDirectories: rootDirs,
-            rootFiles: rootFiles
-        }).get()
-        guiElement.append(fileTreeHTML)
+        // const fileTreeHTML = new FileTreeHTML({
+        //     rootDirectories: rootDirs,
+        //     rootFiles: rootFiles
+        // }).get()
+        // guiElement.append(fileTreeHTML)
     }
     reRenderFileTree() {
         document.getElementById(selector.fileTree)?.remove()

@@ -1,14 +1,11 @@
 import Config from "@/config"
-import { createElementFromHTML } from "@/utils"
-
 import * as React from 'react';
 
 
 const { clear, file, directory, debug } = Config.GUI.storage.local;
 
-class FormHTML {
-    constructor() { }
-    get() {
+class FormHTML extends React.Component{
+    render() {
         return (
             <div className="bg-black p-2 m-2"  style={{ pointerEvents: "all"}}>
                 <div className="overflow-auto local-system-form" >
