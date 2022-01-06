@@ -6,7 +6,7 @@ import * as ORM from "@/LocalStorageFileSystem/ORM";
 const fileTreeSelector = Config.GUI.fileTree
 const selector = Config.GUI.storage.local
 const icon = {
-    trash: 'fa fa-trash-o',
+    trash: 'fas fa-trash-alt',
     caretRight: 'fa fa-caret-right',
     caretDown: 'fa fa-caret-down'
 }
@@ -45,9 +45,9 @@ class FileTreeHTML {
             const dir = dirs[i];
             html += `
                 <div class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}" >
-                    <div class="d-flex justify-content-between align-items-center">
-                        <i class="${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
-                        <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                    <div class="flex justify-between">
+                        <i class="self-center ${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
+                        <i class="self-center ${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
                         <div>${dir.name}</div>
                         <i class="${selector.directory.delete} ${icon.trash}"></i>
                     </div>
@@ -70,11 +70,11 @@ class FileTreeHTML {
             const dir = directories[i];
             html += `
                 <div class="directory bg-white p-2 m-2 rounded" data-directory-id="${dir.ID}" >
-                    <div class="d-flex justify-content-between align-items-center">
-                        <i class="${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
-                        <i class="${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
+                    <div class="flex justify-between">
+                        <i class="self-center ${fileTreeSelector.directory.open} ${icon.caretRight}"></i>
+                        <i class="self-center ${fileTreeSelector.directory.close} ${icon.caretDown}" hidden></i>
                         <div>${dir.name}</div>
-                        <i class="${selector.directory.delete} ${icon.trash}"></i>
+                        <i class="self-center ${selector.directory.delete} ${icon.trash}"></i>
                     </div>
                     <div class="${fileTreeSelector.directory.children}" hidden>
                         ${this.treeHTMLFromDirectoryID(dir.ID)}
@@ -94,9 +94,9 @@ class FileTreeHTML {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             html += `
-                <div class="file bg-white p-2 m-2 rounded d-flex justify-content-between" data-file-id="${file.ID}">
-                    ${file.name} 
-                    <i class="${selector.file.delete} ${icon.trash} align-self-center"></i>
+                <div class="file bg-white flex justify-between p-2 m-2 rounded" data-file-id="${file.ID}">
+                    <div>${file.name}</div>
+                    <i class="self-center ${selector.file.delete} ${icon.trash} align-self-center"></i>
                 </div>
             `
         }
@@ -113,7 +113,7 @@ class FileTreeHTML {
         //RootDirectoryはイメージ的には特別なディレクトリで他のモデルにしたい。
         //けど今はしない理由はDirectoryモデルにコメント済み。
         let html = `
-            <div id="${id}"  style="cursor: default;" class="bg-dark p-2 m-2 pointer-events="all">
+            <div id="${id}" class="bg-black p-2 m-2  pointer-events="all">
                 <div  class="directory overflow-auto local-system-file-tree">
                 ${this.directoriesHTML(directories) }
                 ${this.filesHTML(files) }

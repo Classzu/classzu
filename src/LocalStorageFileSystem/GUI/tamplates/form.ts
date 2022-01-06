@@ -8,7 +8,7 @@ class FormHTML {
 
         return createElementFromHTML(
         `
-        <div class=" bg-dark p-2 m-2" style="cursor: default;"  pointer-events="all">
+        <div class="bg-black p-2 m-2" style="cursor: default;"  pointer-events="all">
                 <div class="overflow-auto local-system-form" >
                     <details class="bg-white p-2 m-2 rounded">
                         <summary>LocalStorage</summary>
