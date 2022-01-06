@@ -20,7 +20,7 @@ module.exports = {
 
     resolve: {
         // 拡張子を配列で指定
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts','.tsx','.js','jsx'],
         alias: {
             ts: path.resolve(__dirname, 'src/ts/'),
         },
@@ -30,7 +30,7 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /\.(ts|tsx)$/,
                 use: 'ts-loader',
             },
             {
