@@ -25,6 +25,3 @@ class Test {
     )
   }
 }
-
-
-console.log(render(new Test().render(), document.querySelector("#jsxtest")))

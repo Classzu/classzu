@@ -1,23 +1,28 @@
 import { getClasszuElement } from "@/utils";
+import Config from "@/config";
+
 import LocalStorageFileSystem from "..";
 import DirectoryCLUD from "./DirectoryCLUD";
 import FileCLUD from "./FileCLUD";
-import FileTreeHTML from "./tamplates/fileTree";
-import FormHTML from "./tamplates/form";
 import * as ORM from '../ORM'
 
-import Config from "@/config";
+import FileTreeHTML from "./tamplates/fileTree";
+import FormHTML from "./tamplates/form";
+
+import { render } from 'react-dom'
+import React from "react";
+
 const fileTreeSelector = Config.GUI.fileTree
 const selector = Config.GUI.storage.local
 
-class GUI {
+class GUI extends React.Component{
 
     public superThis: LocalStorageFileSystem;
     public Directory: DirectoryCLUD = new DirectoryCLUD(this)
     public File: FileCLUD = new FileCLUD(this)
 
     constructor(superThis: LocalStorageFileSystem) {
-
+        super({})
         this.superThis = superThis;
 
     }
@@ -42,7 +47,7 @@ class GUI {
     renderForm() {
         const guiElement: HTMLElement = getClasszuElement(this.superThis.classzu.rootElementId, "gui")
         const formHTML = new FormHTML().get()
-        guiElement.append(formHTML)
+        render(formHTML, guiElement)
     }
     listenForm() {
 
