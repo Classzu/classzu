@@ -1,74 +1,57 @@
 import Konva from 'konva';
-
-import Class from './Class';
-import Config from './config/index'
-import { getUniqueStr, getPxString, getClasszuElement, getClasszuElementId, createElementFromHTML } from './utils/index'
+import { getUniqueStr, getClasszuElement } from './utils/index'
+import { render } from 'react-dom';
 
 // import 'css/style.min.css'
 
 /**
  * HTML getters
  */
-import getGuiHTML from './tamplates/gui/index'
+import ClasszuGUI from './ClasszuGUI'
 import LocalStorageFileSystem from './LocalStorageFileSystem';
-import { render } from 'react-dom';
+import ClasszuBase from './ClasszuBase';
 
 export default class Classzu {
     
     private _rootElementId: string
     private _stage: Konva.Stage
-
     public Node: any = Node
 
     constructor(id?: string) {
 
         /**
-         *  build root Element
+         *  Build Classzu Base
          */
         if (id === undefined || id === null) {
             id = getUniqueStr()
-            const element = document.createElement('div')
-            element.id = id;
-            element.style.width = getPxString(innerWidth)
-            element.style.height = getPxString(innerHeight)
-            document.body.append(element);
+            new ClasszuBase({ id: id }).createRootInBody()
         }
+        const base = new ClasszuBase({ id: id })
+        base.customRoot()
 
-        const rootElement: HTMLElement | null = document.getElementById(id)
-        if (rootElement === null) throw Error('Cannot find HTMLElement.')
-        rootElement.innerHTML = "";
-        rootElement.style.position = "relative"
-
-
+        render(
+            base.render(),
+            document.getElementById(id)!
+        )
+        
         /**
-         * build konva Element
+         * Setup Konva
          */
-        const konvaElement: HTMLDivElement = document.createElement('div')
-        konvaElement.id = getClasszuElementId(id, "konva")
-        konvaElement.style.width = getPxString(rootElement.clientWidth)
-        konvaElement.style.height = getPxString(rootElement.clientHeight)
-        rootElement.append(konvaElement)
-
-        /**
-         * build GUI Element
-         */
-        const guiElement: HTMLDivElement = document.createElement('div')
-        guiElement.id = getClasszuElementId(id, "gui")
-        guiElement.style.position = "absolute"
-        guiElement.style.top = "0px"
-
-        rootElement.append(guiElement)
-
-
-        this._rootElementId = id
-        this._stage =  new Konva.Stage({
+        const konvaElement: HTMLDivElement = getClasszuElement(id, 'konva') as HTMLDivElement
+        const stage =  new Konva.Stage({
             container: konvaElement,
             width: konvaElement.clientWidth,
             height: konvaElement.clientHeight,
         });
-
+        
         const layer: Konva.Layer = new Konva.Layer();
-        this._stage.add(layer);
+        stage.add(layer);
+
+        /**
+         *  Set variables
+         */
+        this._rootElementId = id
+        this._stage = stage
 
     }
     get rootElementId(): string {
@@ -83,30 +66,26 @@ export default class Classzu {
     public useGUI(): Classzu {
 
         const guiElement: HTMLElement = getClasszuElement(this._rootElementId, "gui")
-        guiElement.append(getGuiHTML())
-
-        const createClass = (e: Event): void => {
-            
-            const _class = new Class().group().listen(guiElement)
-            const layer = this._stage.getLayers()[0]
-            layer.add(_class)
-            return e.preventDefault()
-
-        }
-
-        document.querySelector(`.${Config.GUI.class.create}`)?.addEventListener('click', createClass.bind(this))
-
+        const classzuGui = new ClasszuGUI({classzu: this})
+        render(
+            classzuGui.render(),
+            guiElement
+        )
         return this;
 
     }
-    public useLocalFileSystem() {
-        //guiをないにrenderすることで、this.useGUIでrenderingされるものが相殺されるので、
-        //後でguiとは別のElementを用意する必要がある。
-        const guiElement: HTMLElement = getClasszuElement(this._rootElementId, "gui")
+    public useLocalFileSystem(): Classzu{
+
+        const lsfsElement: HTMLElement = getClasszuElement(this._rootElementId, "localStorageFileSystem")
         const localStorageFileSystem = new LocalStorageFileSystem(this)
-        render(localStorageFileSystem.GUI.render(), guiElement)
+        render(
+            localStorageFileSystem.GUI.render(),
+            lsfsElement
+        )
 
         localStorageFileSystem.GUI.listen()// for debug
         
+        return this;
+
     }
 }
